@@ -13,7 +13,7 @@ int main() {
     return 1;
   }
 
-  GLFWwindow* window = glfwCreateWindow(640, 480, "Hello Triangle", NULL, NULL);
+  GLFWwindow* window = glfwCreateWindow(640, 480, "OpenGl", NULL, NULL);
   if (!window) {
     fprintf(stderr, "ERROR: could not open window with GLFW3\n");
     glfwTerminate();
@@ -94,6 +94,33 @@ int main() {
     13.0f, 0.0f, 5.0f,
     13.0f, 0.0f, -5.0f,
 
+    //left wall 18
+    10.0f, 6.0f, -5.0f,
+    10.0f, 6.0f, 5.0f,
+    0.0f, 6.0f, -5.0f,
+
+    10.0f, 6.0f, 5.0f,
+    0.0f, 6.0f, 5.0f,
+    0.0f, 6.0f, -5.0f,
+ 
+    //right wall 18
+    10.0f, -6.0f, -5.0f,
+    10.0f, -6.0f, 5.0f,
+    0.0f, -6.0f, -5.0f,
+
+    10.0f, -6.0f, 5.0f,
+    0.0f, -6.0f, 5.0f,
+    0.0f, -6.0f, -5.0f,
+
+    //wall behind (left)
+    0.0f, 6.0f, -5.0f,
+    0.0f,  -6.0f, -5.0f,
+    -3.0f, 0.0f, 5.0f,
+
+    //wall behind (right)
+    -3.0f, 0.0f, -5.0f,
+    -3.0f, 0.0f, 4.0f,
+     0.0f, 6.0f, 5.0f,
 
 
   };
@@ -101,7 +128,7 @@ int main() {
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, 90 * sizeof(float), points, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 144 * sizeof(float), points, GL_STATIC_DRAW);
   
   
   GLuint vao = 0;
