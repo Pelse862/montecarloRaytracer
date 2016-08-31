@@ -112,7 +112,7 @@ int main() {
     0.0f, -6.0f, 5.0f,
     0.0f, -6.0f, -5.0f,
 
-    //wall behind (left)
+    //wall behind (left) 
     0.0f, 6.0f, -5.0f,
     0.0f,  -6.0f, -5.0f,
     -3.0f, 0.0f, 5.0f,
@@ -128,7 +128,7 @@ int main() {
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  glBufferData(GL_ARRAY_BUFFER, 144 * sizeof(float), points, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, 216 * sizeof(float), points, GL_STATIC_DRAW);
   
   
   GLuint vao = 0;
@@ -172,7 +172,7 @@ int main() {
     glUseProgram(shader_programme);
     glBindVertexArray(vao);
     // draw points 0-3 from the currently bound VAO with current in-use shader
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 144);
     // update other events like input handling 
     glfwPollEvents();
     // put the stuff we've been drawing onto the display
