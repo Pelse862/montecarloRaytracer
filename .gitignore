@@ -1,1 +1,8 @@
 *.dll
+*.obj
+*.log
+*.tlog
+*.lastbuildstate
+*.evc
+*.idp
+*.pdb
