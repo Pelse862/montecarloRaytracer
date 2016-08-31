@@ -6,7 +6,6 @@ Triangle::Triangle()
 {
 }
 
-
 Triangle::~Triangle()
 {
 }
