@@ -39,10 +39,13 @@
 #include "TriangleSoup.hpp"
 #include "Rotator.hpp "
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 /*
  * main(argc, argv) - the standard C++ entry point for the program
  */
-
 
 
 int main(int argc, char *argv[]) {
@@ -52,7 +55,7 @@ int main(int argc, char *argv[]) {
 
 	float time;
 
-	GLfloat Mout[16] = {};
+	GLfloat Model[16] = {};
 	GLfloat Ry[16] = {};
 	GLfloat Rz[16] = {};
 	GLfloat P[16] = {};
@@ -61,9 +64,11 @@ int main(int argc, char *argv[]) {
 	GLfloat RxMouse[16] = {};
 	GLfloat RyMouse[16] = {};
 
+
 	GLint location_time;
-	GLint location_Mout;
-	GLint location_P;
+	GLint location_Model;
+	GLint location_uniProj;
+	GLint location_uniView;
 
 	MouseRotator myMouseRotator;
 
@@ -112,7 +117,15 @@ int main(int argc, char *argv[]) {
 		return -1;
 	}
 
+	// Set up projection
+	glm::mat4 view = glm::lookAt(
+		glm::vec3(-2.2f, 100.2f, 100.2f),
+		glm::vec3(0.0f, 0.0f, 0.0f),
+		glm::vec3(0.0f, 0.0f, 1.0f)
+		);
 	
+	// Set up perspective
+	glm::mat4 proj = glm::perspective(glm::radians(90.0f), 800.0f / 600.0f, 0.1f, 1000.0f);
 
 	//shaders----------------
 	myShader.createShader("vertex.glsl", "fragment.glsl");
@@ -126,8 +139,9 @@ int main(int argc, char *argv[]) {
     cout << "GL version:      " << glGetString(GL_VERSION) << endl;
     cout << "Desktop size:    " << vidmode->width << "x" << vidmode->height << " pixels" << endl;
     
-	location_Mout = glGetUniformLocation(myShader.programID, "Mout");
-	location_P = glGetUniformLocation(myShader.programID, "P");
+	location_Model = glGetUniformLocation(myShader.programID, "Model");
+	location_uniProj = glGetUniformLocation(myShader.programID, "proj");
+	location_uniView = glGetUniformLocation(myShader.programID, "view");
 
 	location_time = glGetUniformLocation(myShader.programID, "time");
 	if (location_time == -1) { // If the variable is not found , -1 is returned
@@ -164,20 +178,22 @@ int main(int argc, char *argv[]) {
 		time = (float)glfwGetTime(); // Number of seconds since the program was started
 		//glUniform1f(location_time, time);
 
-		Utilities::mat4perspective(P, M_PI_2, 1, 0.1, 100);
-		glUniformMatrix4fv(location_P, 1, GL_FALSE, P);
 
-		Utilities::mat4rotz(RyMouse, -myMouseRotator.phi); //musrotation yled
+		Utilities::mat4rotz(RyMouse, myMouseRotator.phi); //musrotation yled
 		Utilities::mat4rotx(RxMouse, -myMouseRotator.theta);  //musrotation xled
-		Utilities::mat4mult(RxMouse, RyMouse, Mout);
+		Utilities::mat4mult(RxMouse, RyMouse, Model);
 
 		Utilities::mat4rotx(Rz, M_PI / 2);
 		Utilities::mat4identity(S);
-		Utilities::mat4scale(S, 0.3);
-		Utilities::mat4mult(S, Rz, T);
-		Utilities::mat4mult(S, Mout, Mout);
+		Utilities::mat4scale(S, 0.1);
+		Utilities::mat4translate(T, 0,0,0);
+		Utilities::mat4mult(S, T, T);
+		Utilities::mat4mult(S, Model, Model);
 
-		glUniformMatrix4fv(location_Mout, 1, GL_FALSE, Mout); // Copy the value
+
+		glUniformMatrix4fv(location_Model, 1, GL_FALSE, Model); // Copy the value
+		glUniformMatrix4fv(location_uniView, 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(location_uniProj, 1, GL_FALSE, glm::value_ptr(proj));
 
 		glUseProgram(myShader.programID);
 		
