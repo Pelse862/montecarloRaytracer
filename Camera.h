@@ -14,7 +14,7 @@ class Camera
 		void createImage();
 		
 	private:
-		Pixel image[HEIGHT][WIDTH];
+		
 		
 
 };

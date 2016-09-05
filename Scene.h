@@ -1,14 +1,14 @@
 #pragma once
 #include "Triangle.h"
-#include "GL\glew.h"
-#include "GLFW\glfw3.h"
+#include <vector>
 class Scene
 {
   public:
 	  Scene();
 	  ~Scene();
-
+	  void Scene::setRoom( std::vector<float> & room );
   private:
+	  Triangle roomTriangles;
   
 
 };
