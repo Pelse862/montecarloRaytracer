@@ -61,6 +61,11 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  & traingles) {
 				image[i][n][3] = 255;
 				std::cout << "hit" << i << " " << n << '\n';			
 			}
+			else {
+				image[i][n][0] = 0;
+				image[i][n][1] = 0;
+				image[i][n][3] = 0;
+			}
 
 		}
 	}
