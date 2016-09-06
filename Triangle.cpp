@@ -13,11 +13,10 @@ Triangle::Triangle()
 
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-int Triangle::molllerTrombore(std::vector<tri>  & triangles) {
+int Triangle::molllerTrombore(std::vector<tri>  & triangles, glm::vec3 O, glm::vec3 D) {
 	
 	//dummy declarations, suppose to be sent into function
-	glm::vec3 O;
-	glm::vec3 D;
+
 
 	//real declarations
 	glm::vec3 e1, e2;

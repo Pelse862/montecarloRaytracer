@@ -16,9 +16,14 @@ int main() {
 	vector<glm::vec3> room;
 	vector<Triangle::tri> rommTriangles;
 	Triangle T;
+	Camera C;
 	T.setRoom(room);
 	T.setTriangles(room, rommTriangles);
-	T.molllerTrombore(rommTriangles);
+
+	//right now this also creates an image
+	C.checkTriangleHits(rommTriangles);
+	
+	
 	/*
 	for (auto i : rommTriangles) {
 		std::cout << " normal:" << i.normal[0] << " " <<

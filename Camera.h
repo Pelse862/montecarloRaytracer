@@ -1,23 +1,35 @@
 #pragma once
 
 #include "Pixel.h"
+#include "glm.hpp"
+#include "Direction.h"
+#include "Triangle.h"
+#include <iostream>
+#include <vector>
+using std::vector;
 
+const int iamgeSize = 500;
 
 class Camera
-{
-
+{	
+	//....
+	friend class Direction;
 	public:
 
 		Camera();
 		void caluclateEye2Image();
+		glm::vec3 returnCameraPos() { return cameraPosition; }
+		int checkTriangleHits(std::vector<Triangle::tri>  & traingles);
 		~Camera();
 		//dummy declaration
 		void createImage();
 		
 	private:
-		float deltaDist = 2 / 500;
-		int cameraPosition[3] = { 0,0,-1 };
-		float image[500][500][3];
+
+		float deltaDist = 2 / iamgeSize;
+		glm::vec3 cameraPosition = glm::vec3(-1, 0, 0);
+		vector<vector<vector<float> > > image;
+
 		
 		
 
