@@ -3,12 +3,71 @@
 
 
 
+#define EPSILON 0.000001
+
+
 Triangle::Triangle()
 {
 }
 
 
-void Triangle::setRoom(std::vector<Vector3>  & room) {
+//mollertrombore intersection algorithm
+// calcualte ray intersection for rays 
+int Triangle::molllerTrombore(std::vector<tri>  & triangles) {
+	
+	//dummy declarations, suppose to be sent into function
+	glm::vec3 O;
+	glm::vec3 D;
+
+	//real declarations
+	glm::vec3 e1, e2;
+	glm::vec3 P, Q, T;
+	float det, inv_det, U, V;
+	float t;
+	int index = 0;
+
+	//caluclate trianglehit for all triangles in the vector 
+	for (auto triangle : triangles) {
+		//find vectors for 2 edges sharing V1
+		e1 = triangle.vert[1] - triangle.vert[0];
+		e1 = triangle.vert[2] - triangle.vert[0];
+		//calculate det
+
+		P = glm::cross(D, e2);
+		det = glm::dot(e1, P);
+		if (det > -EPSILON && det < EPSILON) return 0;
+		inv_det = 1.f / det;
+		
+
+		T = O - triangle.vert[0];
+
+		U = glm::dot(T, P) * inv_det;
+
+		if (U < 0.f || U > 1.f) return 0;
+
+		Q = glm::cross(T, e1);
+
+		V = glm::dot(D, Q) * inv_det;
+
+
+		if (V < 0.f || U + V  > 1.f) return 0;
+
+		t = glm::dot(e2, Q) * inv_det;
+
+		if (t > EPSILON) { //ray intersection
+			return 1;
+		}
+
+		// No hit, no win
+		return 0;
+
+
+	}
+
+}
+
+//vertex data for the room
+void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
 
 
@@ -94,7 +153,7 @@ void Triangle::setRoom(std::vector<Vector3>  & room) {
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
 	};
-	Vector3 V;
+	glm::vec3 V;
 	for (int i = 0; i < 178; i=i+3) {
 	
 		V.x = vertex_array_data[i];
@@ -106,7 +165,7 @@ void Triangle::setRoom(std::vector<Vector3>  & room) {
 
 }
 
-void Triangle::setTriangles(std::vector<Vector3>  & room, std::vector<Triangle::tri> & triangles) {
+void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
 	tri t;
 	for (int i = 0; i < room.size()-1; i=i+3) {
 		t.vert[0] = room[i];

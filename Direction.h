@@ -1,15 +1,17 @@
 #pragma once
+#include "vec3.hpp"
 #include <vector>
 class Direction
 {
 	public:
 		Direction();
+
+		glm::vec3 calculateDirection(glm::vec3 startPos, glm::vec3 endPos);
+
 		~Direction();
 	private: 
 	//Create a vector that describes the ray direction
-	struct Vector3 {
-		float x, y, z;
-	};
-	std::vector<Vector3> direction;
+
+	std::vector<glm::vec3> direction;
 };
 
