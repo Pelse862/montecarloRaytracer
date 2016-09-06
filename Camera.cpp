@@ -10,11 +10,11 @@ Camera::Camera()
 
 void Camera::createImage() {
 
-	FILE *fp = fopen("first.ppm", "wb"); /* b - binary mode */
-	(void)fprintf(fp, "P6\n%d %d\n255\n", iamgeSize, iamgeSize);
-	for (int i = 0; i < iamgeSize; ++i)
+	FILE *fp = fopen("image.ppm", "wb"); /* b - binary mode */
+	(void)fprintf(fp, "P6\n%d %d\n255\n", imageSize, imageSize);
+	for (int i = 0; i < imageSize; ++i)
 	{
-		for (int n = 0; n < iamgeSize; ++n)
+		for (int n = 0; n < imageSize; ++n)
 		{
 			static unsigned char color[3];
 			color[0] = image[i][n][0];  /* red */
@@ -29,23 +29,14 @@ void Camera::createImage() {
 
 //check if the ray from the image plane hits a triangle.
 int Camera::checkTriangleHits(std::vector<Triangle::tri>  & traingles) {
-	// Set up image !!!!!!!!!!!! BETA AS FUCK
-	image.resize(iamgeSize);
-	for (int i = 0; i < iamgeSize; ++i) {
-		image[i].resize(iamgeSize);
-
-		for (int j = 0; j < iamgeSize; ++j)
-			image[i][j].resize(3);
-	}
-
-
+	
 	Direction D;
 	Triangle T;
 	glm::vec3 rayOrigin;
 	glm::vec3 rayDirection;
 	int hit;
-	for (int i = 0; i < iamgeSize; i++) {
-		for (int n = 0; n < iamgeSize; n++) {
+	for (int i = 0; i < imageSize; i++) {
+		for (int n = 0; n < imageSize; n++) {
 			//new origin for each pixelvalue from -1 to +1
 			rayOrigin = glm::vec3(0 , -1 + (deltaDist/2) + deltaDist*i,-1 + (deltaDist / 2) + deltaDist*n);
 			//raydirection
@@ -54,20 +45,17 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  & traingles) {
 			//check if triangle intersection
 
 			hit = T.molllerTrombore(traingles, rayOrigin, rayDirection);
-			std::cout << hit << '\n';
+			//std::cout << hit << '\n';
 			if (hit) {
-				image[i][n][0] = 255;
-				image[i][n][1] = 255;
-				image[i][n][3] = 255;
-				std::cout << "hit" << i << " " << n << '\n';			
+				
+				image[i][n][0] = 255.0f;
+				image[i][n][1] = 255.0f;
+				image[i][n][2] = 255.0f;
 			}
-			else {
-				image[i][n][0] = 0;
-				image[i][n][1] = 0;
-				image[i][n][3] = 0;
-			}
+			
 
 		}
+		std::cout << i << " iteration" << std::endl;
 	}
 	//create image
 	createImage();

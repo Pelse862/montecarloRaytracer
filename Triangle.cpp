@@ -35,6 +35,7 @@ int Triangle::molllerTrombore(std::vector<tri>  & triangles, glm::vec3 O, glm::v
 		P = glm::cross(D, e2);
 		det = glm::dot(e1, P);
 		if (det > -EPSILON && det < EPSILON) return 0;
+		
 		inv_det = 1.f / det;
 		
 
@@ -59,8 +60,6 @@ int Triangle::molllerTrombore(std::vector<tri>  & triangles, glm::vec3 O, glm::v
 
 		// No hit, no win
 		return 0;
-
-
 	}
 
 }

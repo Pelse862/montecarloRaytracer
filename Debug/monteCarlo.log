@@ -2,5 +2,10 @@
 c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(20): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
 c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(21): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
 c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(22): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
+  Generating Code...
+  Compiling...
+  montecarloMain.cpp
+  Direction.cpp
+  Generating Code...
   monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.exe
   monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.pdb (Partial PDB)

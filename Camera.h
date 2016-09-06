@@ -8,7 +8,8 @@
 #include <vector>
 using std::vector;
 
-const int iamgeSize = 500;
+//small size for fast rendering
+const int imageSize = 30;
 
 class Camera
 {	
@@ -26,9 +27,11 @@ class Camera
 		
 	private:
 
-		float deltaDist = 2 / iamgeSize;
+		float deltaDist = 2 / imageSize;
 		glm::vec3 cameraPosition = glm::vec3(-1, 0, 0);
-		vector<vector<vector<float> > > image;
+		vector<vector<vector<float> > > image =
+			vector<vector<vector<float> > >(imageSize, vector<vector<float> >(imageSize, vector<float>(3, 0.f)));
+
 
 		
 		
