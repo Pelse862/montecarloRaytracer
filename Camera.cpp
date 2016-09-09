@@ -28,13 +28,13 @@ void Camera::createImage() {
 }
 
 //check if the ray from the image plane hits a triangle.
-int Camera::checkTriangleHits(std::vector<Triangle::tri>  & traingles) {
+int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	
 	Direction D;
 	Triangle T;
 	glm::vec3 rayOrigin;
 	glm::vec3 rayDirection;
-	int hit;
+	int hit=1;
 	for (int i = 0; i < imageSize; i++) {
 		for (int n = 0; n < imageSize; n++) {
 			//new origin for each pixelvalue from -1 to +1
@@ -45,7 +45,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  & traingles) {
 			//check if triangle intersection
 
 			hit = T.molllerTrombore(traingles, rayOrigin, rayDirection);
-			//std::cout << hit << '\n';
+			//std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
 				image[i][n][0] = 255.0f;

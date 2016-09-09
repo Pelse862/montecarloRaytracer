@@ -3,12 +3,15 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include "glm.hpp"
 
 
 #include "Scene.h"
 #include "Camera.h"
 #include "Triangle.h"
+
+
+
 using namespace std;
 
 int main() {

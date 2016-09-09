@@ -6,6 +6,7 @@
 
 #include "glm.hpp"
 
+
 #include <vector>
 class Triangle
 {
@@ -20,12 +21,12 @@ class Triangle
 
 		Triangle();
 		//send all triangles to the function.
-		int molllerTrombore(std::vector<tri>  & traingles, glm::vec3 O, glm::vec3 D);
+		int molllerTrombore(std::vector<tri> traingles, glm::vec3 O, glm::vec3 D);
 
 		void setRoom(std::vector<glm::vec3>  & room);
 		
 		
-		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri);
+		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri); 
 
 		~Triangle();
 

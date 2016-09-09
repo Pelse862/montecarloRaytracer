@@ -20,7 +20,7 @@ class Camera
 		Camera();
 		void caluclateEye2Image();
 		glm::vec3 returnCameraPos() { return cameraPosition; }
-		int checkTriangleHits(std::vector<Triangle::tri>  & traingles);
+		int checkTriangleHits(std::vector<Triangle::tri>  traingles);
 		~Camera();
 		//dummy declaration
 		void createImage();
