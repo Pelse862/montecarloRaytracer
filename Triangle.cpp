@@ -22,6 +22,8 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 	float det, inv_det, U, V;
 	float t;
 	int index = 0;
+
+	//std::cout << D.x << D.y <<  D.z << std::endl;
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 
@@ -29,6 +31,7 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
 		//calculate det
+		
 
 		P = glm::cross(D, e2);
 		det = glm::dot(e1, P);
@@ -102,9 +105,9 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.0f,  6.0f, 5.0f,    // 
 		0.0f,  6.0f, 5.0f,   // 
 
-		10.0f,  6.0f, -5.0f,    // right back
+		/*10.0f,  6.0f, -5.0f,    // right back
 		13.0f,  0.0f, -5.0f,    //
-		13.0f,  0.0f, 5.0f,  // 
+		13.0f,  0.0f, 5.0f,  // */
 
 		13.0f,  0.0f, 5.0f,   // right back
 		10.f,  6.0f, 5.0f,     // 
