@@ -38,15 +38,15 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	for (float i = 0; i < imageSize; i++) {
 		for (float n = 0; n < imageSize; n++) {
 			//new origin for each pixelvalue from -1 to +1
-			//std::cout << -1.0f + (deltaDist / 2) + deltaDist*i << std::endl;
 			rayOrigin = glm::vec3(0.0f , -1.0f + (deltaDist/2) + deltaDist*i,-1.0f + (deltaDist / 2) + deltaDist*n);
 			//raydirection
 			rayDirection = D.calculateRayDirection(rayOrigin);
+			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection
 
 			hit = T.molllerTrombore(traingles, rayOrigin, rayDirection);
-			//std::cout <<"hit : " <<  hit << '\n';
+			std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
 				image[i][n][0] = 255.0f;
@@ -56,7 +56,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 			
 
 		}
-		std::cout << i << " iteration" << std::endl;
+		std::cout << i << "st iteration" << std::endl;
 	}
 	//create image
 	createImage();

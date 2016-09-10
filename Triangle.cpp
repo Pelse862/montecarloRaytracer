@@ -23,7 +23,6 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 	float t;
 	int index = 0;
 
-	//std::cout << D.x << D.y <<  D.z << std::endl;
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 
@@ -31,12 +30,14 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
 		//calculate det
-		
-
+		//std::cout << e1.x << " : " << e1.y << " : " << e1.z << '\n';
+		//std::cout << e2.x << " : " << e2.y << " : " << e2.z << '\n';
 		P = glm::cross(D, e2);
+
 		det = glm::dot(e1, P);
+
 		if (det > -EPSILON && det < EPSILON) {
-			//std::cout << "1st 0" << '\n';
+			std::cout << "1st 0" << '\n';
 			return 0;
 		}
 
@@ -82,7 +83,7 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 	float vertex_array_data[] = {
 
 		0.0f,  6.0f, -5.0f,    // Floor
-		0.0f,  -6.0f, -5.0f,    //
+	   	0.0f,  -6.0f, -5.0f,    //
 		10.0f, -6.0f, -5.0f,  // 
 
 		0.0f,  6.0f, -5.0f,   // Floor
@@ -105,9 +106,9 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.0f,  6.0f, 5.0f,    // 
 		0.0f,  6.0f, 5.0f,   // 
 
-		/*10.0f,  6.0f, -5.0f,    // right back
+		10.0f,  6.0f, -5.0f,    // right back
 		13.0f,  0.0f, -5.0f,    //
-		13.0f,  0.0f, 5.0f,  // */
+		13.0f,  0.0f, 5.0f,  // 
 
 		13.0f,  0.0f, 5.0f,   // right back
 		10.f,  6.0f, 5.0f,     // 
@@ -162,7 +163,8 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.f,  6.0f, 5.0f,    // 	
 	};
 	glm::vec3 V;
-	for (int i = 0; i < 178; i=i+3) {
+	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
+	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data)-2; i=i+3) {
 	
 		V.x = vertex_array_data[i];
 		V.y = vertex_array_data[i + 1];

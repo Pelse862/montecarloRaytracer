@@ -1,4 +1,4 @@
 ﻿  Triangle.cpp
-c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(178): warning C4018: '<': signed/unsigned mismatch
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(180): warning C4018: '<': signed/unsigned mismatch
   monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.exe
   monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.pdb (Partial PDB)

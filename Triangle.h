@@ -16,6 +16,7 @@ class Triangle
 		struct tri {
 			glm::vec3 vert[3];
 			glm::vec3 normal;
+			glm::vec3 color;
 		};
 		
 
