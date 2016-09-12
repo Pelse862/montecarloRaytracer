@@ -21,56 +21,28 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 	glm::vec3 P, Q, T;
 	float det, inv_det, U, V;
 	float t;
+	float t2;
 	int index = 0;
 
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
-
 		//find vectors for 2 edges sharing V1
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
-		//calculate det
-		//std::cout << e1.x << " : " << e1.y << " : " << e1.z << '\n';
-		//std::cout << e2.x << " : " << e2.y << " : " << e2.z << '\n';
 		P = glm::cross(D, e2);
-
-		det = glm::dot(e1, P);
-
-		if (det > -EPSILON && det < EPSILON) {
-			std::cout << "1st 0" << '\n';
-			return 0;
-		}
-
 		
-		inv_det = 1.f / det;
-		
-
 		T = O - triangle.vert[0];
-
-		U = glm::dot(T, P) * inv_det;
-
-		if (U < 0.f || U > 1.f) { 
-			//std::cout << "2st 0";
-			return 0;
-		}
 
 		Q = glm::cross(T, e1);
 
-		V = glm::dot(D, Q) * inv_det;
+		t = glm::dot(Q,e2)/ glm::dot(P, e1);
+		
 
-
-		if (V < 0.f || U + V  > 1.f) {
-			//std::cout << "3nd 0" << '\n';
-			return 0;
-		}
-
-		t = glm::dot(e2, Q) * inv_det;
-
-		if (t > EPSILON) { //ray intersection
+		if ((t) > 1) { //ray intersection
 			//std::cout << "1st hit";
 			return 1;
 		}
-		std::cout << "t : " << t << '\n';		
+		//std::cout << "t : " << t << '\n';		
 	}
 	return 0;
 }

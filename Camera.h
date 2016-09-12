@@ -30,7 +30,7 @@ class Camera
 		float deltaDist = 2.0f / imageSize;
 		glm::vec3 cameraPosition = glm::vec3(-1.0f, 0.0f, 0.0f);
 		vector<vector<vector<float> > > image =
-			vector<vector<vector<float> > >(imageSize, vector<vector<float> >(imageSize, vector<float>(3, 0.f)));
+			vector<vector<vector<float> > >(imageSize, vector<vector<float> >(imageSize, vector<float>(3, 0.5f)));
 
 
 		

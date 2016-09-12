@@ -32,21 +32,20 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	
 	Direction D;
 	Triangle T;
-	glm::vec3 rayOrigin;
+	glm::vec3 imagePoint;
 	glm::vec3 rayDirection;
 	int hit=1;
 	for (float i = 0; i < imageSize; i++) {
 		for (float n = 0; n < imageSize; n++) {
 			//new origin for each pixelvalue from -1 to +1
-			rayOrigin = glm::vec3(0.0f , -1.0f + (deltaDist/2) + deltaDist*i,-1.0f + (deltaDist / 2) + deltaDist*n);
+			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDist/2) + deltaDist*i,-1.0f + (deltaDist / 2) + deltaDist*n);
 			//raydirection
-			rayDirection = D.calculateRayDirection(rayOrigin);
+			rayDirection = D.calculateRayDirection(imagePoint);
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection
-
-			hit = T.molllerTrombore(traingles, rayOrigin, rayDirection);
-			std::cout <<"hit : " <<  hit << '\n';
+			hit = T.molllerTrombore(traingles, imagePoint, rayDirection);
+			//std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
 				image[i][n][0] = 255.0f;

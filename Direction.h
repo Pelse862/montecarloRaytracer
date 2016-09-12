@@ -12,6 +12,6 @@ class Direction
 		~Direction();
 	private: 
 		//Create a vector that describes the ray direction
-		glm::vec3 direction;
+		glm::vec3 direction = glm::vec3(0.f,0.f,0.f);
 };
 
