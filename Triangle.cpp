@@ -2,6 +2,9 @@
 #include <vector>
 #include <iostream>
 
+#include <stdio.h>      /* printf, scanf, puts, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>   
 
 #define EPSILON 0.000001
 
@@ -13,33 +16,32 @@ Triangle::Triangle()
 
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D) {
+int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & pixelcolor) {
 	
 
 	//real declarations
 	glm::vec3 e1, e2;
 	glm::vec3 P, Q, T;
-	float det, inv_det, U, V;
 	float t;
-	float t2;
-	int index = 0;
 
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 		//find vectors for 2 edges sharing V1
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
+		
 		P = glm::cross(D, e2);
 		
 		T = O - triangle.vert[0];
 
 		Q = glm::cross(T, e1);
 
-		t = glm::dot(Q,e2)/ glm::dot(P, e1);
+		t = glm::dot(Q,e2) / glm::dot(P, e1);
 		
 
 		if ((t) > 1) { //ray intersection
 			//std::cout << "1st hit";
+			pixelcolor = triangle.color;
 			return 1;
 		}
 		//std::cout << "t : " << t << '\n';		
@@ -149,6 +151,9 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
 	tri t;
+	srand(time(NULL));
+
+
 	for (int i = 0; i < room.size()-1; i=i+3) {
 		t.vert[0] = room[i];
 		t.vert[1] = room[i+1];
@@ -157,7 +162,12 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 		t.normal[0] = (t.vert[0].x*t.vert[1].z) - (t.vert[0].z*t.vert[1].y);
 		t.normal[1] = (t.vert[0].z*t.vert[0].x) - (t.vert[0].x*t.vert[1].z);
 		t.normal[2] = (t.vert[0].x*t.vert[1].y) - (t.vert[0].y*t.vert[1].x);
+		//std::cout << i;
+		t.color = glm::vec3(rand() % 254 + 1, rand() % 254 + 1, rand() % 254 + 1);
+
 		triangles.push_back(t);
+
+
 	}
 
 

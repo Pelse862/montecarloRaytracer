@@ -23,6 +23,7 @@ void Camera::createImage() {
 			(void)fwrite(color, 1, 3, fp);
 		}
 	}
+
 	(void)fclose(fp);
 
 }
@@ -34,6 +35,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	Triangle T;
 	glm::vec3 imagePoint;
 	glm::vec3 rayDirection;
+	glm::vec3 pixelColor;
 	int hit=1;
 	for (float i = 0; i < imageSize; i++) {
 		for (float n = 0; n < imageSize; n++) {
@@ -44,16 +46,15 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection
-			hit = T.molllerTrombore(traingles, imagePoint, rayDirection);
+
+			hit = T.molllerTrombore(traingles, imagePoint, rayDirection, pixelColor);
 			//std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
-				image[i][n][0] = 255.0f;
-				image[i][n][1] = 255.0f;
-				image[i][n][2] = 255.0f;
+				image[i][n][0] = pixelColor.x;
+				image[i][n][1] = pixelColor.y;
+				image[i][n][2] = pixelColor.z;
 			}
-			
-
 		}
 		std::cout << i << "st iteration" << std::endl;
 	}
@@ -66,4 +67,5 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 
 Camera::~Camera()
 {
+
 }
