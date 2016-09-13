@@ -9,7 +9,7 @@
 using std::vector;
 
 //small size for fast rendering
-const int imageSize = 1000;
+const int imageSize = 10;
 
 class Camera
 {	

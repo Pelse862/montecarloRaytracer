@@ -12,9 +12,9 @@ void Camera::createImage() {
 
 	FILE *fp = fopen("image.ppm", "wb"); /* b - binary mode */
 	(void)fprintf(fp, "P6\n%d %d\n255\n", imageSize, imageSize);
-	for (int i = 0; i < imageSize; ++i)
+	for (int i = 0; i < imageSize; i++)
 	{
-		for (int n = 0; n < imageSize; ++n)
+		for (int n = 0; n < imageSize; n++)
 		{
 			static unsigned char color[3];
 			color[0] = image[i][n][0];  /* red */
@@ -46,14 +46,14 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection
-
+	
 			hit = T.molllerTrombore(traingles, imagePoint, rayDirection, pixelColor);
 			//std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
-				image[i][n][0] = pixelColor.x;
-				image[i][n][1] = pixelColor.y;
-				image[i][n][2] = pixelColor.z;
+				image[n][i][0] = pixelColor.x;
+				image[n][i][1] = pixelColor.y;
+				image[n][i][2] = pixelColor.z;
 			}
 		}
 		std::cout << i << "st iteration" << std::endl;

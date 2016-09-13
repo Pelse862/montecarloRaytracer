@@ -20,8 +20,11 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 	
 
 	//real declarations
-	glm::vec3 e1, e2;
-	glm::vec3 P, Q, T;
+	glm::vec3 e1 = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 e2 = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 P = glm::vec3(0.f, 0.f, 0.f); 
+	glm::vec3 Q = glm::vec3(0.f, 0.f, 0.f); 
+	glm::vec3 T = glm::vec3(0.f, 0.f, 0.f);
 	float t;
 
 	//caluclate trianglehit for all triangles in the vector 
@@ -29,7 +32,6 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 		//find vectors for 2 edges sharing V1
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
-		
 		P = glm::cross(D, e2);
 		
 		T = O - triangle.vert[0];
@@ -42,6 +44,7 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 		if ((t) > 1) { //ray intersection
 			//std::cout << "1st hit";
 			pixelcolor = triangle.color;
+			//std::cout << "triangle.color: " << triangle.color.x << " " << triangle.color.y << " " << triangle.color.z << std::endl;
 			return 1;
 		}
 		//std::cout << "t : " << t << '\n';		
@@ -146,7 +149,7 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		room.push_back(V);
 		
 	}
-
+	std::cout << "Room: " << room.size() << std::endl;
 }
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
@@ -163,13 +166,59 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 		t.normal[1] = (t.vert[0].z*t.vert[0].x) - (t.vert[0].x*t.vert[1].z);
 		t.normal[2] = (t.vert[0].x*t.vert[1].y) - (t.vert[0].y*t.vert[1].x);
 		//std::cout << i;
-		t.color = glm::vec3(rand() % 254 + 1, rand() % 254 + 1, rand() % 254 + 1);
-
+	
 		triangles.push_back(t);
 
 
 	}
+	
+		//floor
+		triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
+		triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
 
+		//Floor left
+		triangles.at(2).color = glm::vec3(255.f, 255.f, 255.f);
+
+		//Floor right
+		triangles.at(3).color = glm::vec3(255.f, 255.f, 255.f);
+
+		//Wall back Cyan
+		triangles.at(4).color = glm::vec3(0.f, 255.f, 255.f);
+		triangles.at(5).color = glm::vec3(0.f, 255.f, 255.f);
+
+		//Right back Red
+		triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
+		triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
+
+		//Right front Blue
+		triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
+		triangles.at(9).color = glm::vec3(0.f, 0.f, 255.f);
+
+		//Left back Green
+		triangles.at(10).color = glm::vec3(0.f, 255.f, 0.f);
+		triangles.at(11).color = glm::vec3(0.f, 255.f, 0.f);
+
+		//Left front Yellow
+		triangles.at(12).color = glm::vec3(255.f, 255.f, 0.f);
+		triangles.at(13).color = glm::vec3(255.f, 255.f, 0.f);
+
+		//Wall front  Magenta
+		triangles.at(14).color = glm::vec3(255.f, 0.f, 255.f);
+		triangles.at(15).color = glm::vec3(255.f, 0.f, 255.f);
+
+		//Roof
+		triangles.at(16).color = glm::vec3(255.f, 255.f, 255.f);
+		triangles.at(17).color = glm::vec3(255.f, 255.f, 255.f);
+
+		//Roof left
+		triangles.at(18).color = glm::vec3(255.f, 255.f, 255.f);
+
+		//Roof right
+		triangles.at(19).color = glm::vec3(255.f, 255.f, 255.f);
+
+
+	
+	
 
 }
 

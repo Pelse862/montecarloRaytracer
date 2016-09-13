@@ -26,7 +26,7 @@ int main() {
 
 	//right now this also creates an image
 	C.checkTriangleHits(rommTriangles);
-	
+
 	
 	/*
 	for (auto i : rommTriangles) {
