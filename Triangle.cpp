@@ -1,7 +1,7 @@
 #include "Triangle.h"
 #include <vector>
 #include <iostream>
-
+#include <math.h>
 #include <stdio.h>      /* printf, scanf, puts, NULL */
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>   
@@ -12,8 +12,22 @@
 Triangle::Triangle()
 {
 }
+//calculates if the ray is on the surface of the sphere
+//using the formula ||x-c|^2| = r^2 
+int Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir){
 
+	glm::vec3 diff;
 
+	for (auto & sphere : spheres) {
+		diff = dir - sphere.center;
+		float lhs = sqrt(pow(dir.x, 2) + pow(dir.y, 2) + pow(dir.z, 2));
+		if (pow(lhs, 2) == pow(sphere.radius, 2)) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
 int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & pixelcolor) {
