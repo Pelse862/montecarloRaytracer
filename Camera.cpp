@@ -51,9 +51,9 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 			//std::cout <<"hit : " <<  hit << '\n';
 			if (hit) {
 				
-				image[n][i][0] = pixelColor.x;
-				image[n][i][1] = pixelColor.y;
-				image[n][i][2] = pixelColor.z;
+				image[i][n][0] = pixelColor.x;
+				image[i][n][1] = pixelColor.y;
+				image[i][n][2] = pixelColor.z;
 			}
 		}
 		std::cout << i << "st iteration" << std::endl;

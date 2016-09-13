@@ -6,7 +6,7 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>   
 
-#define EPSILON 0.000001
+#define EPSILON 0.00000000000000001
 
 
 Triangle::Triangle()
@@ -39,32 +39,58 @@ int Triangle::molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec
 	glm::vec3 P = glm::vec3(0.f, 0.f, 0.f); 
 	glm::vec3 Q = glm::vec3(0.f, 0.f, 0.f); 
 	glm::vec3 T = glm::vec3(0.f, 0.f, 0.f);
-	float t;
 
+	//real declarations
+	float t = 0;
+	float det = 0;
+	float inv_det = 0;
+	float u = 0;
+	float v = 0;
+	D = glm::normalize(D);
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 		//find vectors for 2 edges sharing V1
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
+
 		P = glm::cross(D, e2);
-		
+		det = glm::dot(e1, P);
+
+
+		if (det > -EPSILON && det < EPSILON) continue;
+
+		inv_det = 1.f / det;
+
 		T = O - triangle.vert[0];
+
+		u = glm::dot(T, P) * inv_det;
+
+		if (u < 0.f || u > 1.f) continue;
 
 		Q = glm::cross(T, e1);
 
-		t = glm::dot(Q,e2) / glm::dot(P, e1);
-		
+		//Calculate V parameter and test bound
+		v = glm::dot(D, Q) * inv_det;
+		//The intersection lies outside of the triangle
+		if (v < 0.f || u + v  > 1.f) continue;
 
-		if ((t) > 1) { //ray intersection
-			//std::cout << "1st hit";
+
+		t = glm::dot(e2, Q) * inv_det;
+
+
+		if ((t) > EPSILON) { //ray intersection
+								//std::cout << "1st hit";
 			pixelcolor = triangle.color;
-			//std::cout << "triangle.color: " << triangle.color.x << " " << triangle.color.y << " " << triangle.color.z << std::endl;
 			return 1;
 		}
+
 		//std::cout << "t : " << t << '\n';		
 	}
+	
 	return 0;
 }
+
+
 
 //vertex data for the room
 void Triangle::setRoom(std::vector<glm::vec3>  & room) {
