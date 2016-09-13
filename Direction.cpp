@@ -7,8 +7,7 @@ Direction::Direction()
 }
 
 glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos) {
-	Camera C;
-	return endPos - C.returnCameraPos();
+	return endPos - Camera::getCameraPosition();
 }
 
 Direction::~Direction()

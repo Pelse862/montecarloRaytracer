@@ -40,7 +40,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	for (float i = 0; i < imageSize; i++) {
 		for (float n = 0; n < imageSize; n++) {
 			//new origin for each pixelvalue from -1 to +1
-			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDist/2) + deltaDist*i,-1.0f + (deltaDist / 2) + deltaDist*n);
+			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDist/2) + deltaDist*n,-1.0f + (deltaDist / 2) + deltaDist*i);
 			//raydirection
 			rayDirection = D.calculateRayDirection(imagePoint);
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
