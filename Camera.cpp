@@ -14,7 +14,7 @@ void Camera::createImage() {
 	(void)fprintf(fp, "P6\n%d %d\n255\n", imageSize, imageSize);
 	for (int i = 0; i < imageSize; i++)
 	{
-		for (int n = 0; n < imageSize; n++)
+		for (int n = imageSize-1; n >= 0; n--)
 		{
 			static unsigned char color[3];
 			color[0] = image[i][n][0];  /* red */
