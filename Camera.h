@@ -9,7 +9,8 @@
 using std::vector;
 
 //small size for fast rendering
-const int imageSize = 1000;
+const int imageSizeY = 1200;
+const int imageSizeZ = 1000;
 
 class Camera
 {	
@@ -28,9 +29,10 @@ class Camera
 		
 	private:
 
-		float deltaDist = 2.0f / imageSize;
+		float deltaDistY = 2.0f / imageSizeY;
+		float deltaDistZ = 2.0f / imageSizeZ;
 		vector<vector<vector<float> > > image =
-			vector<vector<vector<float> > >(imageSize, vector<vector<float> >(imageSize, vector<float>(3, 0.5f)));
+			vector<vector<vector<float> > >(imageSizeZ, vector<vector<float> >(imageSizeY, vector<float>(3, 0.5f)));
 
 
 		
