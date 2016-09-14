@@ -16,27 +16,37 @@
 using namespace std;
 
 int main() {
+	bool running = true;
+	int camera = 1;
 	Scene S;
 	vector<glm::vec3> room;
 	vector<Triangle::tri> rommTriangles;
 	Triangle T;
 	Camera C;
-	T.setRoom(room);
-	T.setTriangles(room, rommTriangles);
+	int in;
+	while (running) {
 
-	//right now this also creates an image
-	C.checkTriangleHits(rommTriangles);
+		std::cout << "choose camera (1/2)" << '\n';
+		std::cin >> camera;
+		while (camera != 1 && camera != 2) {
+			std::cout << "try again : ";
+			std::cin >> camera;
+		}
+		T.setRoom(room);
+		T.setTriangles(room, rommTriangles);
 
-	
-	/*
-	for (auto i : rommTriangles) {
-		std::cout << " normal:" << i.normal[0] << " " <<
-					i.normal[1] << " " << i.normal[2] << '\n';
-	}*/
-	
-	
+		//right now this also creates an image
+		C.checkTriangleHits(rommTriangles, camera);
 
-	int s;
-	cin >>s ; 
+		std::cout << "So fucking DONE, Run another image? (1/0) : ";
+		std::cin >> in;
+		
+		while (in != 0 && in != 1) {
+			std::cout << "try again : ";
+			std::cin >> in;
+		}
+		if (in == 0)break;
+		
+	}
 	return 0;
 }

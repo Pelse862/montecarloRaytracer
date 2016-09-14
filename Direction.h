@@ -7,7 +7,7 @@ class Direction
 	public:
 		Direction();
 
-		glm::vec3 calculateRayDirection(glm::vec3 startPos);
+		glm::vec3 calculateRayDirection(glm::vec3 startPos,int camera);
 
 		~Direction();
 	private: 

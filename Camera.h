@@ -19,10 +19,12 @@ class Camera
 	public:
 
 		Camera();
-		static glm::vec3 getCameraPosition() { return glm::vec3(-1.0f, 0.0f, 0.0f); }
+		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.0f, 0.0f); }
+
+		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 
 		void caluclateEye2Image();
-		int checkTriangleHits(std::vector<Triangle::tri>  traingles);
+		int checkTriangleHits(std::vector<Triangle::tri>  traingles, int camera);
 		~Camera();
 		//dummy declaration
 		void createImage();

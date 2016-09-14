@@ -32,8 +32,9 @@ void Camera::createImage() {
 }
 
 //check if the ray from the image plane hits a triangle.
-int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
+int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles, int camera) {
 	
+	//Y>Z
 	float fovZ = M_PI/4;
 	float fovY = fovZ* imageSizeZ/imageSizeY;
 	Direction D;
@@ -43,6 +44,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 	glm::vec3 pixelColor;
 	float xx = -1.f;
 	int hit=1;
+
 	for (float i = 0; i < imageSizeZ; i++) {
 		for (float n = 0; n < imageSizeY; n++) {
 
@@ -56,7 +58,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 			//new origin for each pixelvalue from -1 to +1
 			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
 			//raydirection
-			rayDirection = D.calculateRayDirection(imagePoint) - glm::vec3(0.0f,  yy ,zz);
+			rayDirection = D.calculateRayDirection(imagePoint,camera) - glm::vec3(0.0f,  yy ,zz);
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection
@@ -70,7 +72,7 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles) {
 				image[i][n][2] = pixelColor.z;
 			}
 		}
-		std::cout << i << "st iteration" << std::endl;
+		//std::cout << i << "st iteration" << std::endl;
 	}
 	//create image
 	createImage();
