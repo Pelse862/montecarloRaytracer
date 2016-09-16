@@ -189,7 +189,7 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		room.push_back(V);
 		
 	}
-	std::cout << "Room: " << room.size() << std::endl;
+	//std::cout << "Room: " << room.size() << std::endl;
 }
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {

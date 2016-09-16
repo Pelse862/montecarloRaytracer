@@ -19,8 +19,8 @@ int main() {
 	bool running = true;
 	int camera = 1;
 	Scene S;
-	vector<glm::vec3> room;
-	vector<Triangle::tri> rommTriangles;
+	vector<glm::vec3> rommTriangles;
+	vector<Triangle::tri> rommTrianglesWithProperties;
 	Triangle T;
 	Camera C;
 	int in;
@@ -32,11 +32,11 @@ int main() {
 			std::cout << "try again : ";
 			std::cin >> camera;
 		}
-		T.setRoom(room);
-		T.setTriangles(room, rommTriangles);
+		T.setRoom(rommTriangles);
+		T.setTriangles(rommTriangles, rommTrianglesWithProperties);
 
 		//right now this also creates an image
-		C.checkTriangleHits(rommTriangles, camera);
+		C.checkTriangleHits(rommTrianglesWithProperties, camera);
 
 		std::cout << "So fucking DONE, Run another image? (1/0) : ";
 		std::cin >> in;

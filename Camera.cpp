@@ -49,16 +49,15 @@ int Camera::checkTriangleHits(std::vector<Triangle::tri>  traingles, int camera)
 		for (float n = 0; n < imageSizeY; n++) {
 
 
-			//map xx and yy to image plane            
+			//calculate perspective y and z.            
 			float yy = tan(fovZ / 2) * (2 * n - imageSizeY) / float(imageSizeY);
 			float zz = tan(fovY / 2) * (imageSizeZ - 2 * i) / float(imageSizeZ);
-			//std::cout << yy << '\n';
-			//construct ray
+
 
 			//new origin for each pixelvalue from -1 to +1
 			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
-			//raydirection
-			rayDirection = D.calculateRayDirection(imagePoint,camera) - glm::vec3(0.0f,  yy ,zz);
+			//raydirection combined with the perspective vec
+			rayDirection = D.calculateRayDirection(imagePoint,camera) + glm::vec3(0.0f,  yy ,zz);
 			//std::cout << rayDirection .x <<" : " << rayDirection.y << " : " << rayDirection .z<< std::endl;
 
 			//check if triangle intersection

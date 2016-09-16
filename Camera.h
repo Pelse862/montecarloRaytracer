@@ -9,25 +9,30 @@
 using std::vector;
 
 //small size for fast rendering
-const int imageSizeY = 1200;
-const int imageSizeZ = 1000;
+const int imageSizeY = 1920;
+const int imageSizeZ = 1080;
 
 class Camera
 {	
-	//...
+	//convinient declaration
 	friend class Direction;
+
 	public:
 
 		Camera();
-		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.0f, 0.0f); }
 
+		//different position is used depending on user input
+		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.0f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 
-		void caluclateEye2Image();
+		
 		int checkTriangleHits(std::vector<Triangle::tri>  traingles, int camera);
-		~Camera();
-		//dummy declaration
+		
+		//creates an image and saves it into ppm format.
 		void createImage();
+		
+		~Camera();
+		
 		
 	private:
 
