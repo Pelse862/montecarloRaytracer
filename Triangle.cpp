@@ -289,7 +289,7 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
 		V.x = vertex_array_data_cube[i]*2;
 		V.y = vertex_array_data_cube[i + 1]*2;
-		V.z = vertex_array_data_cube[i + 2]*2;
+		V.z = vertex_array_data_cube[i + 2]*2-1;
 
 		room.push_back(V);
 
