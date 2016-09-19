@@ -30,11 +30,13 @@ class Triangle
 		int molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & pixelcolor);
 
 		void setRoom(std::vector<glm::vec3>  & room);
+		void setCube(std::vector<glm::vec3>  & room);
 		
 		//check intersect for implicit sphere
 		int sphereIntersect(std::vector<sphere> spheres,  glm::vec3 dir);
 
-		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri); 
+		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri);
+		void setTrianglesCube(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri);
 
 		~Triangle();
 

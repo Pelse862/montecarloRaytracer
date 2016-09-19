@@ -24,6 +24,11 @@ int main() {
 	Triangle T;
 	Camera C;
 	int in;
+
+	T.setRoom(rommTriangles);
+
+	T.setTriangles(rommTriangles, rommTrianglesWithProperties);
+
 	while (running) {
 
 		std::cout << "choose camera (1/2)" << '\n';
@@ -32,8 +37,6 @@ int main() {
 			std::cout << "try again : ";
 			std::cin >> camera;
 		}
-		T.setRoom(rommTriangles);
-		T.setTriangles(rommTriangles, rommTrianglesWithProperties);
 
 		//right now this also creates an image
 		C.checkTriangleHits(rommTrianglesWithProperties, camera);
