@@ -3,15 +3,11 @@
 #include <cstdio>
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "glm.hpp"
-
-
-
 #include "Scene.h"
 #include "Camera.h"
 #include "Triangle.h"
-
-
 
 using namespace std;
 
@@ -21,13 +17,16 @@ int main() {
 	Scene S;
 	vector<glm::vec3> rommTriangles;
 	vector<Triangle::tri> rommTrianglesWithProperties;
+	std::vector<Triangle::sphere> spheres;
 	Triangle T;
 	Camera C;
 	int in;
 
+	//set room propertis
 	T.setRoom(rommTriangles);
-
 	T.setTriangles(rommTriangles, rommTrianglesWithProperties);
+	T.setSpheres(spheres);
+
 
 	while (running) {
 
@@ -39,7 +38,7 @@ int main() {
 		}
 
 		//right now this also creates an image
-		C.checkTriangleHits(rommTrianglesWithProperties, camera);
+		C.checkTriangleandSphereHits(rommTrianglesWithProperties, spheres , camera);
 
 		std::cout << "So fucking DONE, Run another image? (1/0) : ";
 		std::cin >> in;

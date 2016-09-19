@@ -1,7 +1,9 @@
 ﻿  Vertex.cpp
   Triangle.cpp
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\triangle.cpp(197): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\triangle.cpp(200): warning C4018: '<': signed/unsigned mismatch
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(54): warning C4018: '<': signed/unsigned mismatch
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(121): warning C4018: '<': signed/unsigned mismatch
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(241): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\triangle.cpp(244): warning C4018: '<': signed/unsigned mismatch
   Scene.cpp
   Ray.cpp
   Pixel.cpp
@@ -9,12 +11,16 @@ c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytrace
   Direction.cpp
   ColorDbl.cpp
   Camera.cpp
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(23): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(24): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(25): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(38): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(70): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(71): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
-c:\users\pelle serander\documents\visual studio 2015\projects\montecarloraytracer\camera.cpp(72): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(23): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(24): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(25): warning C4244: '=': conversion from 'float' to 'unsigned char', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(49): warning C4305: 'initializing': truncation from 'double' to 'float'
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(75): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(76): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(77): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(80): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(81): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+c:\users\pelle\documents\visual studio 2015\projects\montecarlo\montecarlo\camera.cpp(82): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
   Generating Code...
-LINK : fatal error LNK1104: cannot open file 'glew32.lib'
+  monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.exe
+  monteCarlo.vcxproj -> C:\Users\Pelle\Documents\Visual Studio 2015\Projects\monteCarlo\Debug\monteCarlo.pdb (Partial PDB)
