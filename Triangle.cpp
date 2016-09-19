@@ -38,7 +38,7 @@ void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::
 			pixelcolor = sphere.color;
 
 			d1 = -1 * dot(l, b) + sqrtA;
-			d2 = -1 * dot(l, b) + sqrtA;
+			d2 = -1 * dot(l, b) - sqrtA;
 			pos1 = O + d1*l;
 			pos1 = O + d2*l;
 			float dist1 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
@@ -207,6 +207,9 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.0f,  -6.0f, 5.0f,    // Roof right
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
+
+		//box
+
 	};
 	glm::vec3 V;
 	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
@@ -291,7 +294,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s;
 	s.center = glm::vec3(5.0f, 0.0f, 0.0f);
-	s.radius = 2.0f;
+	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	S.push_back(s);
 }

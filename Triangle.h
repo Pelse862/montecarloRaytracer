@@ -23,7 +23,6 @@ class Triangle
 			glm::vec3 center;
 			float radius;
 			glm::vec3 color;
-
 		};
 
 

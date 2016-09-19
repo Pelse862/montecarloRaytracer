@@ -42,32 +42,25 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 	glm::vec3 rayDirection;
 	glm::vec3 instersectionPointTriangle, instersectionPointSphere;
 	glm::vec3 pixelColorTriangle, pixelColorSphere;
-	int hit=0;
 	//perspective values
 	float py;
 	float pz;
 	//Y>Z
 	float fovZ = M_PI / 4;
-	float fovY = fovZ* imageSizeZ / imageSizeY;
-	//Sphere object
-	int hitS = 0;
-
-
+	float fovY = fovZ* float(imageSizeZ) / float(imageSizeY);
+	float tanZ = tan(fovZ / 2);
+	float tanY = tan(fovY / 2);
 	for (float i = 0; i < imageSizeZ; i++) {	
 		for (float n = 0; n < imageSizeY; n++) {
 
-
 			//calculate perspective y and z.            
-			py = tan(fovZ / 2) * (2 * n - imageSizeY) / float(imageSizeY);
-			pz = tan(fovY / 2) * (imageSizeZ - 2 * i) / float(imageSizeZ);
-
-
+			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
+			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
 
 			//new origin for each pixelvalue from -1 to +1
 			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
 			//raydirection combined with the perspective vec
 			rayDirection = D.calculateRayDirection(imagePoint,camera) + glm::vec3(0.0f,  py ,pz);
-
 
 			//check if triangle intersection
 			T.molllerTrombore(traingles, imagePoint, rayDirection, instersectionPointTriangle, pixelColorTriangle);
@@ -75,8 +68,8 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 			//check if sphere intersection
 			T.sphereIntersect(spheres, rayDirection, imagePoint, instersectionPointSphere, pixelColorSphere );
 			
-
-			//since sphere and triangle has deifferent intersection this is needed
+			//since sphere and triangle has deifferent intersection this is needed 
+			//to set the color 
 			if (glm::distance(imagePoint, pixelColorTriangle) > glm::distance(imagePoint, instersectionPointSphere)) {
 				image[i][n][0] = pixelColorSphere.x;
 				image[i][n][1] = pixelColorSphere.y;
@@ -87,7 +80,6 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 				image[i][n][1] = pixelColorTriangle.y;
 				image[i][n][2] = pixelColorTriangle.z;
 			}
-		
 		}
 	}
 
