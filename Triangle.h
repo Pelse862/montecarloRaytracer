@@ -18,9 +18,12 @@ class Triangle
 			glm::vec3 normal;
 			glm::vec3 color;
 		};
+
 		struct sphere {
 			glm::vec3 center;
 			float radius;
+			glm::vec3 color;
+
 		};
 
 

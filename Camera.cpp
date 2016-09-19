@@ -72,9 +72,11 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 			//check if triangle intersection
 			T.molllerTrombore(traingles, imagePoint, rayDirection, instersectionPointTriangle, pixelColorTriangle);
 		
-
+			//check if sphere intersection
 			T.sphereIntersect(spheres, rayDirection, imagePoint, instersectionPointSphere, pixelColorSphere );
 			
+
+			//since sphere and triangle has deifferent intersection this is needed
 			if (glm::distance(imagePoint, pixelColorTriangle) > glm::distance(imagePoint, instersectionPointSphere)) {
 				image[i][n][0] = pixelColorSphere.x;
 				image[i][n][1] = pixelColorSphere.y;

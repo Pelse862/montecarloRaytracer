@@ -30,28 +30,25 @@ void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::
 				+ pow(sphere.radius,2) );
 	
 		if (sqrtA == 0) {
-			pixelcolor.x = 0.0f;
-			pixelcolor.y = 0.0f;
-			pixelcolor.z = 0.0f;
+			pixelcolor = sphere.color;
 			d = -1* dot(l, b);
 			intersectionPoint = O + d*l;
 		}
 		else if(sqrtA>0){
-			pixelcolor.x = 255.0f;
-			pixelcolor.y = 255.0f;
-			pixelcolor.z = 255.0f;
+			pixelcolor = sphere.color;
+
 			d1 = -1 * dot(l, b) + sqrtA;
 			d2 = -1 * dot(l, b) + sqrtA;
 			pos1 = O + d1*l;
 			pos1 = O + d2*l;
 			float dist1 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
 			float dist2 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			float closer = dist1 < dist2 ? d1 : d2;
-			intersectionPoint = O + closer*l;
+			
+			intersectionPoint = O + (dist1 < dist2 ? d1 : d2)*l;
 
 		}
 		else {
-			intersectionPoint = glm::vec3(1000.0f, 1000000.0f,100000.0f);
+			intersectionPoint = glm::vec3(10000.0f, 1000000.0f,100000.0f);
 		}
 
 
@@ -295,6 +292,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	sphere s;
 	s.center = glm::vec3(5.0f, 0.0f, 0.0f);
 	s.radius = 2.0f;
+	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	S.push_back(s);
 }
 
