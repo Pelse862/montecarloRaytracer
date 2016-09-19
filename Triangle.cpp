@@ -220,14 +220,54 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
 		
-		//box
-		5.f, 0.f, 3.f,
-		7.f, 0.f, 3.f,
+		//box 
+		5.f, 0.f, 3.f,	//roof
+		7.f, 0.f, 3.f,	
 		5.f, 2.f, 3.f,
 
-		7.f, 0.f, 3.f,
+		7.f, 0.f, 3.f, 
 		7.f, 2.f, 3.f,
 		5.f, 2.f, 3.f,
+
+		5.f, 0.f, 1.f,	//floor
+		7.f, 0.f, 1.f,
+		5.f, 2.f, 1.f,
+
+		7.f, 0.f, 1.f,
+		7.f, 2.f, 1.f,
+		5.f, 2.f, 1.f,
+
+		5.f, 2.f, 3.f,	//front
+		5.f, 2.f, 1.f,
+		5.f, 0.f, 1.f,
+
+		5.f, 2.f, 3.f,	
+		5.f, 0.f, 1.f,
+		5.f, 0.f, 3.f,
+	
+		7.f, 2.f, 3.f,	//back
+		7.f, 2.f, 1.f,
+		7.f, 0.f, 1.f,
+
+		7.f, 2.f, 3.f,
+		7.f, 0.f, 1.f,
+		7.f, 0.f, 3.f,
+		
+		5.f, 2.f ,1.f, //left side
+		7.f ,2.f ,1.f,
+		5.f ,2.f ,3.f,
+	
+		5.f, 2.f , 3.f,
+		7.f, 2.f , 3.f,
+		7.f ,2.f ,1.f,
+		
+		5.f, 0.f ,1.f, //right side
+		7.f ,0.f ,1.f,
+		5.f ,0.f ,3.f,
+	
+		5.f, 0.f , 3.f,
+		7.f, 0.f , 3.f,
+		7.f ,0.f ,1.f,
 
 	};
 	glm::vec3 V;
@@ -304,7 +344,9 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 		//Roof right
 		triangles.at(19).color = glm::vec3(255.f, 255.f, 255.f);
-}
+
+		//box could have color
+}	
 
 //adds spheres to the scene
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
