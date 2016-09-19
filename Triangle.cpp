@@ -137,8 +137,8 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
 
-
 	float vertex_array_data[] = {
+
 
 		0.0f,  6.0f, -5.0f,    // Floor
 	   	0.0f,  -6.0f, -5.0f,    //
@@ -219,15 +219,17 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.0f,  -6.0f, 5.0f,    // Roof right
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
+
 		
-		//box 
-		5.f, 0.f, 3.f,	//roof
-		7.f, 0.f, 3.f,	
+		//box
+	
+		5.f, 0.f, 3.f,
+		7.f, 0.f, 3.f,
 		5.f, 2.f, 3.f,
 
 		7.f, 0.f, 3.f, 
 		7.f, 2.f, 3.f,
-		5.f, 2.f, 3.f,
+		5.f, 2.f, 3.f, 
 
 		5.f, 0.f, 1.f,	//floor
 		7.f, 0.f, 1.f,
@@ -272,20 +274,34 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 	};
 	glm::vec3 V;
 	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
+
+	// adding cube
+	for (int i = 0; i < (sizeof(vertex_array_data_cube) / sizeof *vertex_array_data_cube) - 2; i = i + 3) {
+
+		V.x = vertex_array_data_cube[i]*2;
+		V.y = vertex_array_data_cube[i + 1]*2;
+		V.z = vertex_array_data_cube[i + 2]*2;
+
+		room.push_back(V);
+
+	}
+
+
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data)-2; i=i+3) {
 	
 		V.x = vertex_array_data[i];
 		V.y = vertex_array_data[i + 1];
 		V.z = vertex_array_data[i + 2];
+
 		room.push_back(V);
 		
 	}
-	//std::cout << "Room: " << room.size() << std::endl;
+	std::cout << "Room: " << room.size() << std::endl;
 }
+
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
 	tri t;
-	srand(time(NULL));
 
 
 	for (int i = 0; i < room.size()-1; i=i+3) {
@@ -300,53 +316,87 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	
 		triangles.push_back(t);
 	}
+
+	std::cout << "triangles: " << triangles.size() << std::endl;
+
+	//golv cube
+	triangles.at(0).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(1).color = glm::vec3(255.f, 255.f, 0.f);
+
+	//höger
+	triangles.at(2).color = glm::vec3(100.f, 100.f, 100.f);
+	triangles.at(3).color = glm::vec3(100.f, 100.f, 100.f);
+
+	//tak
+	triangles.at(4).color = glm::vec3(255.f, 255.f, 100.f);
+	triangles.at(5).color = glm::vec3(255.f, 255.f, 100.f);
+
+	//front magenta
+	triangles.at(6).color = glm::vec3(100.f, 100.f, 255.f);
+	triangles.at(7).color = glm::vec3(100.f, 100.f, 255.f);
+
+	//vänster
+	triangles.at(8).color = glm::vec3(0.f, 255.f, 0.f);
+	triangles.at(9).color = glm::vec3(0.f, 255.f, 0.f);
+
+	//ej synlig
+	triangles.at(10).color = glm::vec3(255.f, 255.f, 100.f);
+	triangles.at(11).color = glm::vec3(255.f, 255.f, 100.f);
 	
-		//floor
-		triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
-		triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
+	//floor room #########################
+	triangles.at(12).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(13).color = glm::vec3(255.f, 255.f, 255.f);
 
-		//Floor left
-		triangles.at(2).color = glm::vec3(255.f, 255.f, 255.f);
+	//Floor left
+	triangles.at(14).color = glm::vec3(255.f, 255.f, 255.f);
 
-		//Floor right
-		triangles.at(3).color = glm::vec3(255.f, 255.f, 255.f);
+	//Floor right
+	triangles.at(15).color = glm::vec3(255.f, 255.f, 255.f);
 
-		//Wall back Cyan
-		triangles.at(4).color = glm::vec3(0.f, 255.f, 255.f);
-		triangles.at(5).color = glm::vec3(0.f, 255.f, 255.f);
+	//Wall back Cyan
+	triangles.at(16).color = glm::vec3(0.f, 255.f, 255.f);
+	triangles.at(17).color = glm::vec3(0.f, 255.f, 255.f);
 
-		//Right back Red
-		triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
-		triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
+	//Right back Red
+	triangles.at(18).color = glm::vec3(255.f,0.f,0.f);
+	triangles.at(19).color = glm::vec3(255.f,0.f,0.f);
 
-		//Right front Blue
-		triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
-		triangles.at(9).color = glm::vec3(0.f, 0.f, 255.f);
+	//Right front Blue
+	triangles.at(20).color = glm::vec3(0.f, 0.f, 255.f);
+	triangles.at(21).color = glm::vec3(0.f, 0.f, 255.f);
 
-		//Left back Green
-		triangles.at(10).color = glm::vec3(0.f, 255.f, 0.f);
-		triangles.at(11).color = glm::vec3(0.f, 255.f, 0.f);
+	//Left back Green
+	triangles.at(22).color = glm::vec3(0.f, 255.f, 0.f);
+	triangles.at(23).color = glm::vec3(0.f, 255.f, 0.f);
 
-		//Left front Yellow
-		triangles.at(12).color = glm::vec3(255.f, 255.f, 0.f);
-		triangles.at(13).color = glm::vec3(255.f, 255.f, 0.f);
+	//Left front Yellow
+	triangles.at(24).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(25).color = glm::vec3(255.f, 255.f, 0.f);
 
-		//Wall front  Magenta
-		triangles.at(14).color = glm::vec3(255.f, 0.f, 255.f);
-		triangles.at(15).color = glm::vec3(255.f, 0.f, 255.f);
+	//Wall front  Magenta
+	triangles.at(26).color = glm::vec3(255.f, 0.f, 255.f);
+	triangles.at(27).color = glm::vec3(255.f, 0.f, 255.f);
 
-		//Roof
-		triangles.at(16).color = glm::vec3(255.f, 255.f, 255.f);
-		triangles.at(17).color = glm::vec3(255.f, 255.f, 255.f);
+	//Roof
+	triangles.at(28).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(29).color = glm::vec3(255.f, 255.f, 255.f);
 
-		//Roof left
-		triangles.at(18).color = glm::vec3(255.f, 255.f, 255.f);
+	//Roof left
+	triangles.at(30).color = glm::vec3(255.f, 255.f, 255.f);
 
+	//Roof right
+	triangles.at(31).color = glm::vec3(255.f, 255.f, 255.f);
+
+
+<<<<<<< HEAD
 		//Roof right
 		triangles.at(19).color = glm::vec3(255.f, 255.f, 255.f);
 
 		//box could have color
 }	
+=======
+}
+>>>>>>> 396331239539001f9e813e5044b9fd4800f5abaf
 
 //adds spheres to the scene
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
@@ -360,6 +410,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s.radius = 0.5f;
 	s.color = glm::vec3(200.0f, 100.0f, 100.0f);
 	S.push_back(s);
+
 }
 
 //the void is calling

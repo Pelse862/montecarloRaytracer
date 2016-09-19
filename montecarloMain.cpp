@@ -21,10 +21,12 @@ int main() {
 	Triangle T;
 	Camera C;
 	int in;
+
 	//set room propertis
 	T.setRoom(rommTriangles);
 	T.setTriangles(rommTriangles, rommTrianglesWithProperties);
 	T.setSpheres(spheres);
+
 
 	while (running) {
 
