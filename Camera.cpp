@@ -59,6 +59,7 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 
 			//new origin for each pixelvalue from -1 to +1
 			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
+			
 			//raydirection combined with the perspective vec
 			rayDirection = D.calculateRayDirection(imagePoint,camera) + glm::vec3(0.0f,  py ,pz);
 

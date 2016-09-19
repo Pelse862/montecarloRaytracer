@@ -12,20 +12,18 @@ class Triangle
 {
 	public:
 		
-		//bindes the normal to 1 triangle
+		//triangle structure
 		struct tri {
 			glm::vec3 vert[3];
 			glm::vec3 normal;
 			glm::vec3 color;
 		};
-
+		//sphere structure
 		struct sphere {
 			glm::vec3 center;
 			float radius;
 			glm::vec3 color;
 		};
-
-
 
 		Triangle();
 		//send all triangles to the function.

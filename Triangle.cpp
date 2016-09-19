@@ -17,14 +17,18 @@ Triangle::Triangle()
 void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::vec3 O, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor){
 
 	glm::vec3 l = glm::normalize(dir);
-	glm::vec3 b;
-	glm::vec3 pos1,pos2;
-	float d,d1,d2;
-	float a = 1;
-	float sqrtA = 0;
-	for (auto & sphere : spheres) {
-		
+	glm::vec3 pos1, pos2, b;
+	float d,d1,d2,sqrtA;
+	std::vector<glm::vec3> possiblePoint;
+
+	possiblePoint.push_back(glm::vec3(10000.0f, 1000000.0f, 100000.0f));
+	//intersection for multiple spheres?
+	for (auto & sphere : spheres)
+	{
+		//;
 		b = O - sphere.center;
+		if (pow(dot(l, b), 2) - pow(sqrt(pow(b.x, 2) + pow(b.y, 2) + pow(b.z, 2)), 2)
+			+ pow(sphere.radius, 2) < 0) continue;
 
 	    sqrtA = sqrt( pow( dot(l,b) ,2 ) - pow ( sqrt( pow(b.x,2)+ pow(b.y, 2) + pow(b.z, 2) ), 2)
 				+ pow(sphere.radius,2) );
@@ -32,28 +36,29 @@ void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::
 		if (sqrtA == 0) {
 			pixelcolor = sphere.color;
 			d = -1* dot(l, b);
-			intersectionPoint = O + d*l;
+			possiblePoint.push_back(O + d*l);
 		}
-		else if(sqrtA>0){
+		else {
 			pixelcolor = sphere.color;
-
+			
 			d1 = -1 * dot(l, b) + sqrtA;
 			d2 = -1 * dot(l, b) - sqrtA;
 			pos1 = O + d1*l;
 			pos1 = O + d2*l;
 			float dist1 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
 			float dist2 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			
-			intersectionPoint = O + (dist1 < dist2 ? d1 : d2)*l;
-
+			possiblePoint.push_back( O + (dist1 < dist2 ? d1 : d2)*l);
 		}
-		else {
-			intersectionPoint = glm::vec3(10000.0f, 1000000.0f,100000.0f);
-		}
-
-
 	}
-	
+	if (possiblePoint.size() > 1) {
+		for (int i = 0; i < possiblePoint.size() - 1; i++) {
+			intersectionPoint = glm::length(possiblePoint[i]) < glm::length(possiblePoint[i + 1]) ? possiblePoint[i] : possiblePoint[i + 1];
+		}
+	}
+	else
+	{
+		intersectionPoint = possiblePoint[0];
+	}
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
@@ -66,7 +71,8 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 	glm::vec3 P = glm::vec3(0.f, 0.f, 0.f); 
 	glm::vec3 Q = glm::vec3(0.f, 0.f, 0.f); 
 	glm::vec3 T = glm::vec3(0.f, 0.f, 0.f);
-
+	glm::vec3 pos;
+	std::vector<glm::vec3> possiblePoint;
 	//real declarations
 	float t = 0;
 	float det = 0;
@@ -103,18 +109,24 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 
 		t = glm::dot(e2, Q) * inv_det;
 
-
 		if ((t) > EPSILON) { //ray intersection
-								//std::cout << "1st hit";
-			intersectionPoint.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
-			intersectionPoint.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
-			intersectionPoint.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
+			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
+			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			possiblePoint.push_back(pos);
 			pixelcolor = triangle.color;
-		
 		}
-
-		//std::cout << "t : " << t << '\n';		
 	}
+	if (possiblePoint.size() > 1) {
+		for (int i = 0; i < possiblePoint.size() - 1; i++) {
+			intersectionPoint = glm::length(possiblePoint[i]) < glm::length(possiblePoint[i + 1]) ? possiblePoint[i] : possiblePoint[i + 1];
+		}
+	}
+	else
+	{
+		intersectionPoint = possiblePoint[0];
+	}
+	
 	
 
 }
@@ -208,7 +220,7 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
 
-		//box
+	
 
 	};
 	glm::vec3 V;
@@ -296,6 +308,10 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s.center = glm::vec3(5.0f, 0.0f, 0.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	S.push_back(s);
+	s.center = glm::vec3(4.0f, 0.0f, 0.0f);
+	s.radius = 0.5f;
+	s.color = glm::vec3(200.0f, 100.0f, 100.0f);
 	S.push_back(s);
 }
 
