@@ -75,6 +75,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 	std::vector<glm::vec3> possiblePoint;
 	//real declarations
 	float t = 0;
+	float t1 = 10000000.0f;
 	float det = 0;
 	float inv_det = 0;
 	float u = 0;
@@ -109,7 +110,8 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 
 		t = glm::dot(e2, Q) * inv_det;
 
-		if ((t) > EPSILON) { //ray intersection
+		if ((t) > EPSILON && t < t1) { //ray intersection
+			t1 = t;
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
 			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
@@ -117,17 +119,6 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 			pixelcolor = triangle.color;
 		}
 	}
-	if (possiblePoint.size() > 1) {
-		for (int i = 0; i < possiblePoint.size() - 1; i++) {
-			intersectionPoint = glm::length(possiblePoint[i]) < glm::length(possiblePoint[i + 1]) ? possiblePoint[i] : possiblePoint[i + 1];
-		}
-	}
-	else
-	{
-		intersectionPoint = possiblePoint[0];
-	}
-	
-	
 
 }
 
@@ -136,60 +127,61 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 //vertex data for the room
 void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
-	float vertex_array_data_cube[] = {
-		-0.5f, 0.5f, 0.5f, //front
-		-0.5f,-0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-
-		0.5f, 0.5f, 0.5f, //front
-		-0.5f,-0.5f, 0.5f,
-		0.5f,-0.5f, 0.5f,
-
-		0.5f,-0.5f, 0.5f, //golv
-		-0.5f,-0.5f, 0.5f,
-		0.5f,-0.5f,-0.5f,
-
-		0.5f,-0.5f,-0.5f, //golv
-		-0.5f,-0.5f, 0.5f,
-		-0.5f,-0.5f,-0.5f,
-
-		-0.5f,-0.5f,-0.5f, //bak
-		-0.5f, 0.5f,-0.5f,
-		0.5f, 0.5f,-0.5f,
-
-		0.5f, 0.5f,-0.5f, //bak
-		0.5f,-0.5f,-0.5f,
-		-0.5f,-0.5f,-0.5f,
-
-		0.5f,-0.5f,-0.5f, //höger
-		0.5f, 0.5f,-0.5f,
-		0.5f,-0.5f, 0.5f,
-
-		0.5f,-0.5f, 0.5f, //höger
-		0.5f, 0.5f,-0.5f,
-		0.5f, 0.5f, 0.5f,
-
-		0.5f, 0.5f, 0.5f, //topp
-		0.5f, 0.5f,-0.5f,
-		-0.5f, 0.5f, 0.5f,
-
-		-0.5f, 0.5f, 0.5f, //topp
-		0.5f, 0.5f,-0.5f,
-		-0.5f, 0.5f,-0.5f,
-
-		-0.5f, 0.5f,-0.5f, //vänster
-		-0.5f,-0.5f,-0.5f,
-		-0.5f,-0.5f, 0.5f,
-
-		-0.5f,-0.5f, 0.5f, //vänster
-		-0.5f, 0.5f, 0.5f,
-		-0.5f, 0.5f,-0.5f,
-	};
-
 
 	float vertex_array_data[] = {
 
+		//box
 
+		5.f, 0.f, 3.f,
+		7.f, 0.f, 3.f,
+		5.f, 2.f, 3.f,
+
+		7.f, 0.f, 3.f,
+		7.f, 2.f, 3.f,
+		5.f, 2.f, 3.f,
+
+		5.f, 0.f, 1.f,	//floor
+		7.f, 0.f, 1.f,
+		5.f, 2.f, 1.f,
+
+		7.f, 0.f, 1.f,
+		7.f, 2.f, 1.f,
+		5.f, 2.f, 1.f,
+
+		5.f, 2.f, 3.f,	//front
+		5.f, 2.f, 1.f,
+		5.f, 0.f, 1.f,
+
+		5.f, 2.f, 3.f,
+		5.f, 0.f, 1.f,
+		5.f, 0.f, 3.f,
+
+		7.f, 2.f, 3.f,	//back
+		7.f, 2.f, 1.f,
+		7.f, 0.f, 1.f,
+
+		7.f, 2.f, 3.f,
+		7.f, 0.f, 1.f,
+		7.f, 0.f, 3.f,
+
+		5.f, 2.f ,1.f, //left side
+		7.f ,2.f ,1.f,
+		5.f ,2.f ,3.f,
+
+		5.f, 2.f , 3.f,
+		7.f, 2.f , 3.f,
+		7.f ,2.f ,1.f,
+
+		5.f, 0.f ,1.f, //right side
+		7.f ,0.f ,1.f,
+		5.f ,0.f ,3.f,
+
+		5.f, 0.f , 3.f,
+		7.f, 0.f , 3.f,
+		7.f ,0.f ,1.f,
+
+
+		//room
 		0.0f,  6.0f, -5.0f,    // Floor
 	   	0.0f,  -6.0f, -5.0f,    //
 		10.0f, -6.0f, -5.0f,  // 
@@ -271,30 +263,11 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.f,  6.0f, 5.0f,    // 	
 
 		
-		//box
-	/*	5.f, 0.f, 3.f,
-		7.f, 0.f, 3.f,
-		5.f, 2.f, 3.f,
-
-		7.f, 0.f, 3.f,
-		7.f, 2.f, 3.f,
-		5.f, 2.f, 3.f, */
+	
 
 	};
 	glm::vec3 V;
 	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
-
-	// adding cube
-	for (int i = 0; i < (sizeof(vertex_array_data_cube) / sizeof *vertex_array_data_cube) - 2; i = i + 3) {
-
-		V.x = vertex_array_data_cube[i]*2;
-		V.y = vertex_array_data_cube[i + 1]*2;
-		V.z = vertex_array_data_cube[i + 2]*2-1;
-
-		room.push_back(V);
-
-	}
-
 
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data)-2; i=i+3) {
 	
@@ -333,24 +306,24 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	triangles.at(1).color = glm::vec3(255.f, 255.f, 0.f);
 
 	//höger
-	triangles.at(2).color = glm::vec3(100.f, 100.f, 100.f);
-	triangles.at(3).color = glm::vec3(100.f, 100.f, 100.f);
+	triangles.at(2).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(3).color = glm::vec3(255.f, 255.f, 0.f);
 
 	//tak
-	triangles.at(4).color = glm::vec3(255.f, 255.f, 100.f);
-	triangles.at(5).color = glm::vec3(255.f, 255.f, 100.f);
+	triangles.at(4).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(5).color = glm::vec3(255.f, 255.f, 0.f);
 
 	//front magenta
-	triangles.at(6).color = glm::vec3(100.f, 100.f, 255.f);
-	triangles.at(7).color = glm::vec3(100.f, 100.f, 255.f);
+	triangles.at(6).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(7).color = glm::vec3(255.f, 255.f, 0.f);
 
 	//vänster
-	triangles.at(8).color = glm::vec3(0.f, 255.f, 0.f);
-	triangles.at(9).color = glm::vec3(0.f, 255.f, 0.f);
+	triangles.at(8).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(9).color = glm::vec3(255.f, 255.f, 0.f);
 
 	//ej synlig
-	triangles.at(10).color = glm::vec3(255.f, 255.f, 100.f);
-	triangles.at(11).color = glm::vec3(255.f, 255.f, 100.f);
+	triangles.at(10).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(11).color = glm::vec3(255.f, 255.f, 0.f);
 	
 	//floor room #########################
 	triangles.at(12).color = glm::vec3(255.f, 255.f, 255.f);
@@ -397,7 +370,8 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	triangles.at(31).color = glm::vec3(255.f, 255.f, 255.f);
 
 
-}
+}	
+
 
 //adds spheres to the scene
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
