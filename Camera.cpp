@@ -15,9 +15,9 @@ void Camera::createImage() {
 
 	FILE *fp = fopen("image.ppm", "wb"); /* b - binary mode */
 	(void)fprintf(fp, "P6\n%d %d\n255\n", imageSizeY, imageSizeZ);
-	for (int i = 0; i < imageSizeZ; i++)
+	for (int i = imageSizeZ-1; i >= 0; i--)
 	{
-		for (int n = imageSizeY-1; n >= 0; n--)
+		for (int n = imageSizeY-1; n >=0; n--)
 		{
 			static unsigned char color[3];
 			color[0] = image[i][n][0];  /* red */

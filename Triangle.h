@@ -21,8 +21,8 @@ class Triangle
 		//sphere structure
 		struct sphere {
 			glm::vec3 center;
-			float radius;
 			glm::vec3 color;
+			float radius;
 		};
 
 		Triangle();
