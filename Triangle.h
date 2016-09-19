@@ -27,14 +27,16 @@ class Triangle
 
 		Triangle();
 		//send all triangles to the function.
-		int molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & pixelcolor);
+		void molllerTrombore(std::vector<tri>  triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor);
 
 		void setRoom(std::vector<glm::vec3>  & room);
 		
 		//check intersect for implicit sphere
-		int sphereIntersect(std::vector<sphere> spheres,  glm::vec3 dir);
+		void sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::vec3 O, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor);
 
 		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri); 
+
+		void setSpheres(std::vector<sphere> & S);
 
 		~Triangle();
 
