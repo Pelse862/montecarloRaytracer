@@ -35,8 +35,8 @@ class Camera
 
 		float deltaDistY = 2.0f / imageSizeY;
 		float deltaDistZ = 2.0f / imageSizeZ;
-		vector<vector<vector<float> > > image =
-			vector<vector<vector<float> > >(imageSizeZ, vector<vector<float> >(imageSizeY, vector<float>(3, 0.5f)));
+		vector<vector<glm::vec3> > image =
+			vector<vector<glm::vec3 > >(imageSizeZ, vector<glm::vec3 >(imageSizeY, glm::vec3(0.0f, 0.0f, 0.0f)));
 
 };
 
