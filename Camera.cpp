@@ -41,7 +41,7 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 	glm::vec3 imagePoint;
 	glm::vec3 rayDirection;
 	glm::vec3 instersectionPointTriangle, instersectionPointSphere;
-	glm::vec3 pixelColorTriangle, pixelColorSphere;
+	glm::vec3 pixelColorTriangle, pixelColorSphere, temp;
 	//perspective values
 	float py;
 	float pz;
@@ -70,17 +70,14 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 			T.sphereIntersect(spheres, rayDirection, imagePoint, instersectionPointSphere, pixelColorSphere );
 			
 			//since sphere and triangle has deifferent intersection this is needed 
-			//to set the color 
-			if (glm::distance(imagePoint, pixelColorTriangle) > glm::distance(imagePoint, instersectionPointSphere)) {
-				image[i][n][0] = pixelColorSphere.x;
-				image[i][n][1] = pixelColorSphere.y;
-				image[i][n][2] = pixelColorSphere.z;
-			}
-			else {
-				image[i][n][0] = pixelColorTriangle.x;
-				image[i][n][1] = pixelColorTriangle.y;
-				image[i][n][2] = pixelColorTriangle.z;
-			}
+			temp = glm::distance(imagePoint, instersectionPointTriangle) > glm::distance(imagePoint, instersectionPointSphere) ?
+							pixelColorSphere : pixelColorTriangle;
+			
+			//set color
+			image[i][n][0] = temp.x;
+			image[i][n][1] = temp.y;
+			image[i][n][2] = temp.z;
+			
 		}
 	}
 

@@ -52,7 +52,8 @@ void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::
 	}
 	if (possiblePoint.size() > 1) {
 		for (int i = 0; i < possiblePoint.size() - 1; i++) {
-			intersectionPoint = glm::length(possiblePoint[i]) < glm::length(possiblePoint[i + 1]) ? possiblePoint[i] : possiblePoint[i + 1];
+			intersectionPoint = glm::distance(O,possiblePoint[i]) < glm::distance(O,possiblePoint[i + 1]) ?
+								possiblePoint[i] : possiblePoint[i + 1];
 		}
 	}
 	else
@@ -115,7 +116,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
 			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
-			possiblePoint.push_back(pos);
+			intersectionPoint = pos;
 			pixelcolor = triangle.color;
 		}
 	}
