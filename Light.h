@@ -19,7 +19,7 @@ class Light {
 		Light();
 		//~Light();
 
-		void setLight(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles);
+		void setLight( std::vector<Triangle::tri> & triangles);
 
 		//methods
 		glm::dvec3 randomPosition(std::vector<Triangle::tri> & triangles);

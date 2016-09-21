@@ -37,6 +37,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	//classobjects needed
 	Direction D;
 	Triangle *T = new Triangle();
+
 	Ray *r = new Ray();
 	//ray variables
 	glm::vec3 originPoint;

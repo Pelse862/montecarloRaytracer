@@ -4,15 +4,14 @@
 Light::Light()
 {
 }
-void Light::setLight(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles)
+void Light::setLight(std::vector<Triangle::tri> & triangles)
 
 {
 	
-	Triangle::tri t;
-	triangles.at(31).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(31).vert[0].x;
+	triangles.at(19).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(19).vert[0].x;
 
-	lightObject = new Triangle();
+	//lightObject = new Triangle();
 
 }
 
