@@ -11,12 +11,16 @@
 
 Triangle::Triangle()
 {
+	setRoom(roomVertices);
+	setTriangles(roomVertices, triangles);
+	setSpheres(spheres);
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::vec3 O, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor){
 
-	glm::vec3 l = glm::normalize(dir);
+	glm::vec3 l = glm::normalize(r->getDirection());
+	glm::vec3 O = r->getRayorigin();
 	glm::vec3 pos1, pos2, b;
 	float d,d1,d2,sqrtA;
 	std::vector<glm::vec3> possiblePoint;
@@ -60,10 +64,11 @@ void Triangle::sphereIntersect(std::vector<sphere> spheres, glm::vec3 dir, glm::
 	{
 		intersectionPoint = possiblePoint[0];
 	}
+	
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec3 D, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int id) {
 	
 
 	//real declarations
@@ -81,9 +86,11 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 	float inv_det = 0;
 	float u = 0;
 	float v = 0;
-	D = glm::normalize(D);
+	int count = -1;
+	glm::vec3 D = glm::normalize(r->getDirection() );
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
+		count++;
 		//find vectors for 2 edges sharing V1
 		e1 = triangle.vert[1] - triangle.vert[0];
 		e2 = triangle.vert[2] - triangle.vert[0];
@@ -96,7 +103,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 
 		inv_det = 1.f / det;
 
-		T = O - triangle.vert[0];
+		T = r->getRayorigin() - triangle.vert[0];
 
 		u = glm::dot(T, P) * inv_det;
 
@@ -113,6 +120,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, glm::vec3 O, glm::vec
 
 		if ((t) > EPSILON && t < t1) { //ray intersection
 			t1 = t;
+			id = count;
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
 			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
@@ -389,6 +397,15 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	S.push_back(s);
 
 }
+
+
+std::vector<Triangle::tri> Triangle::getTriangles() {
+	return triangles;
+}
+std::vector<Triangle::sphere> Triangle::getSpheres() {
+	return spheres;
+}
+
 
 //the void is calling
 Triangle::~Triangle()

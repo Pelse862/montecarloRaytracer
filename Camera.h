@@ -14,16 +14,16 @@ const int imageSizeZ = 1080;
 
 class Camera
 {		
-
+	friend class Camera;
 	public:
-
+		
 		Camera();
 
 		//different position is used depending on user input
 		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, -0.6f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 		
-		int checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, std::vector<Triangle::sphere> S, int camera);
+		int checkTriangleandSphereHits(int camera);
 		
 		//creates an image and saves it into ppm format.
 		void createImage();

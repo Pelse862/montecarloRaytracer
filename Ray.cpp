@@ -1,9 +1,16 @@
 #include "Ray.h"
 
 
+Ray::Ray(){
+}
 
-Ray::Ray()
-{
+Ray::Ray(glm::vec3 dir, glm::vec3 O){
+	importance = 1;
+	end = false;
+	direction = dir;
+	origin = O;
+
+
 }
 
 

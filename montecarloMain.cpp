@@ -14,19 +14,8 @@ using namespace std;
 int main() {
 	bool running = true;
 	int camera = 1;
-	Scene S;
-	vector<glm::vec3> rommTriangles;
-	vector<Triangle::tri> rommTrianglesWithProperties;
-	std::vector<Triangle::sphere> spheres;
-	Triangle T;
-	Camera C;
+	Camera *C = new Camera();
 	int in;
-
-	//set room propertis
-	T.setRoom(rommTriangles);
-	T.setTriangles(rommTriangles, rommTrianglesWithProperties);
-	T.setSpheres(spheres);
-
 
 	while (running) {
 
@@ -38,7 +27,7 @@ int main() {
 		}
 
 		//right now this also creates an image
-		C.checkTriangleandSphereHits(rommTrianglesWithProperties, spheres , camera);
+		C->checkTriangleandSphereHits(camera);
 
 		std::cout << "So fucking DONE, Run another image? (1/0) : ";
 		std::cin >> in;
@@ -50,5 +39,10 @@ int main() {
 		if (in == 0)break;
 		
 	}
+
+	//probably a memory leak: TODO, fix
+	delete C;
+
+
 	return 0;
 }

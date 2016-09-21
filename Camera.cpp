@@ -32,17 +32,19 @@ void Camera::createImage() {
 }
 
 //check if the ray from the image plane hits a triangle.
-int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, std::vector<Triangle::sphere> spheres, int camera) {
+int Camera::checkTriangleandSphereHits(int camera) {
 	
 	//classobjects needed
 	Direction D;
-	Triangle T;
+	Triangle *T = new Triangle();
+	Ray *r = new Ray();
 	//ray variables
-	glm::vec3 imagePoint;
+	glm::vec3 originPoint;
 	glm::vec3 rayDirection;
 	glm::vec3 instersectionPointTriangle, instersectionPointSphere;
 	glm::vec3 pixelColorTriangle, pixelColorSphere, temp;
 	//perspective values
+	
 	float py;
 	float pz;
 	//Y>Z
@@ -50,6 +52,7 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 	float fovY = fovZ* float(imageSizeZ) / float(imageSizeY);
 	float tanZ = tan(fovZ / 2);
 	float tanY = tan(fovY / 2);
+	int id = -1;
 	for (float i = 0; i < imageSizeZ; i++) {	
 		for (float n = 0; n < imageSizeY; n++) {
 
@@ -58,24 +61,33 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
 
 			//new origin for each pixelvalue from -1 to +1
-			imagePoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
+			originPoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
 			
 			//raydirection combined with the perspective vec
-			rayDirection = D.calculateRayDirection(imagePoint,camera) + glm::vec3(0.0f,  py ,pz);
+			rayDirection = D.calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
+
+			r = new Ray(rayDirection, originPoint);
 
 			//check if triangle intersection
-			T.molllerTrombore(traingles, imagePoint, rayDirection, instersectionPointTriangle, pixelColorTriangle);
+			T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColorTriangle, id);
 		
 			//check if sphere intersection
-			T.sphereIntersect(spheres, rayDirection, imagePoint, instersectionPointSphere, pixelColorSphere );
+			T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColorSphere );
 			
 			//since sphere and triangle has deifferent intersection this is needed 
-			image[i][n] = glm::distance(imagePoint, instersectionPointTriangle) > glm::distance(imagePoint, instersectionPointSphere) ?
-							pixelColorSphere : pixelColorTriangle;
+			if (glm::distance(originPoint, instersectionPointTriangle) > glm::distance(originPoint, instersectionPointSphere)) {
+				image[i][n] = pixelColorSphere;
+				//id = 1
+			}
+			else {
+				image[i][n] = pixelColorTriangle;
+			}
+			
+			
 			
 		}
 	}
-
+	delete r;
 	//create image 
 	createImage();
 	
@@ -85,5 +97,5 @@ int Camera::checkTriangleandSphereHits(std::vector<Triangle::tri>  traingles, st
 
 Camera::~Camera()
 {
-
+	std::cout << "camera ended : ";
 }
