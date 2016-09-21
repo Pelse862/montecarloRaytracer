@@ -8,6 +8,7 @@
 #include "Scene.h"
 #include "Camera.h"
 #include "Triangle.h"
+#include "Light.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ int main() {
 	vector<Triangle::tri> rommTrianglesWithProperties;
 	std::vector<Triangle::sphere> spheres;
 	Triangle T;
+	Light L;
 	Camera C;
 	int in;
 
@@ -26,6 +28,9 @@ int main() {
 	T.setRoom(rommTriangles);
 	T.setTriangles(rommTriangles, rommTrianglesWithProperties);
 	T.setSpheres(spheres);
+	L.setLight(rommTriangles, rommTrianglesWithProperties);
+	
+
 
 
 	while (running) {

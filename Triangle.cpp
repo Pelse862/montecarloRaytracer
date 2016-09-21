@@ -300,6 +300,8 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 		triangles.push_back(t);
 	}
 
+
+
 	std::cout << "triangles: " << triangles.size() << std::endl;
 
 	//golv cube

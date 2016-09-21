@@ -6,6 +6,8 @@
 *.evc
 *.idp
 /glm-0.9.8.0*
+/Debug*
+/Release*
 *.vcxproj
 *.filters
 *.ppm
