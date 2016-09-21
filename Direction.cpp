@@ -15,6 +15,7 @@ glm::vec3 Direction::calculateBounce(Triangle *t, Ray *r, glm::vec3 surfacePoint
 	glm::vec3 normal;
 	glm::vec3 directionIn;
 	if (id == 1) {
+		//this is just a gradient calculation
 		normal = glm::vec3(2 * surfacePoint.x, 2 * surfacePoint.y, 2 * surfacePoint.z);
 	}
 	else {
