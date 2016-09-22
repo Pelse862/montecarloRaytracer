@@ -29,7 +29,7 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 	//intersection for multiple spheres?
 	for (auto & sphere : spheres)
 	{
-		//;
+		
 		b = O - sphere.center;
 		if (pow(dot(l, b), 2) - pow(sqrt(pow(b.x, 2) + pow(b.y, 2) + pow(b.z, 2)), 2)
 			+ pow(sphere.radius, 2) < 0) continue;
@@ -68,7 +68,7 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int id) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
 	
 
 	//real declarations
@@ -123,9 +123,10 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & i
 			id = count;
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
-			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
 			intersectionPoint = pos;
 			pixelcolor = triangle.color;
+			r->setHitT(true);
 		}
 	}
 
@@ -293,16 +294,16 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
 	tri t;
-
+	glm::vec3 u, v;
 
 	for (int i = 0; i < room.size()-1; i=i+3) {
 		t.vert[0] = room[i];
 		t.vert[1] = room[i+1];
 		t.vert[2] = room[i+2];
 
-		t.normal[0] = (t.vert[0].x*t.vert[1].z) - (t.vert[0].z*t.vert[1].y);
-		t.normal[1] = (t.vert[0].z*t.vert[0].x) - (t.vert[0].x*t.vert[1].z);
-		t.normal[2] = (t.vert[0].x*t.vert[1].y) - (t.vert[0].y*t.vert[1].x);
+		u = t.vert[2] - t.vert[0];
+		v = t.vert[1] - t.vert[0];
+		t.normal = glm::normalize(glm::cross(u, v));
 		//std::cout << i;
 	
 		triangles.push_back(t);

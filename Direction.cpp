@@ -14,21 +14,20 @@ glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos, int camera) {
 glm::vec3 Direction::calculateBounce(Triangle *t, Ray *r, glm::vec3 surfacePoint, int id, int ident) {
 	glm::vec3 normal;
 	glm::vec3 directionIn;
-	if (id == 1) {
+	if (ident == 1) {
 		//this is just a gradient calculation
 		normal = glm::vec3(2 * surfacePoint.x, 2 * surfacePoint.y, 2 * surfacePoint.z);
 	}
 	else {
 		normal = t->getTriangles().at(id).normal;
-
 	}
 	normal = glm::normalize(normal);
 
 	directionIn = glm::normalize(r->getDirection());
 	// if the plane normal is poointing i nthe wrong direction... 
 	// TODO: this will have to be corrected later wont work with transparancy I think
-	if (glm::dot(normal, directionIn) > M_PI / 2 ||
-		glm::dot(normal, directionIn) > -M_PI / 2) normal = -normal;
+	float angle = acos(glm::dot(normal, directionIn) / (glm::length(normal)*glm::length(direction)));
+	if (angle> M_PI / 2 || angle > -M_PI / 2) normal = -normal;
 
 
 	return (directionIn-2*glm::dot(directionIn,normal)*normal);

@@ -27,7 +27,7 @@ class Triangle
 
 		Triangle();
 		//send all triangles to the function.
-		void molllerTrombore(std::vector<tri>  triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor, int id);
+		void molllerTrombore(std::vector<tri>  triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor, int & id);
 
 		void setRoom(std::vector<glm::vec3>  & room);
 		
