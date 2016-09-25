@@ -1,6 +1,7 @@
 
 
 #include "Camera.h"
+#include "Light.h"
 #include <math.h>
 #pragma warning( disable  : 4996 )
 # define M_PI 3.14159265358979323846  /* pi */
@@ -35,15 +36,15 @@ void Camera::createImage() {
 int Camera::checkTriangleandSphereHits(int camera) {
 	
 	//classobjects needed
-	Direction D;
+	Direction *D = new Direction();
+
 	Triangle *T = new Triangle();
 
 	Ray *r = new Ray();
 	//ray variables
 	glm::vec3 originPoint;
 	glm::vec3 rayDirection;
-	glm::vec3 instersectionPointTriangle, instersectionPointSphere;
-	glm::vec3 pixelColorTriangle, pixelColorSphere, temp;
+
 	//perspective values
 	
 	float py;
@@ -65,29 +66,18 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			originPoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
 			
 			//raydirection combined with the perspective vec
-			rayDirection = D.calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
+			rayDirection = D->calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
 
 			r = new Ray(rayDirection, originPoint);
+			glm::vec3 pixelColor = returnPixel(r, T , 2 );
 
-			//check if triangle intersection
-			T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColorTriangle, id);
 		
-			//check if sphere intersection
-			T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColorSphere );
-			
-			//since sphere and triangle has deifferent intersection this is needed 
-			if (glm::distance(originPoint, instersectionPointTriangle) > glm::distance(originPoint, instersectionPointSphere)) {
-				image[i][n] = pixelColorSphere;
-				//id = 1
-			}
-			else {
-				image[i][n] = pixelColorTriangle;
-			}
-			
-			
+			image[i][n] = pixelColor;
 			
 		}
 	}
+
+
 	delete r;
 	//create image 
 	createImage();
@@ -95,6 +85,75 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	//end rendering
 	return 0;
 }
+
+
+
+glm::vec3 Camera::returnPixel(Ray *r, Triangle *T, int nrbounces) {
+
+	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
+	int idT = 0;
+	int idS = -1;
+	glm::vec3 pixelColor, pixelColor2;
+	glm::vec3 instersectionPointTriangle;
+	glm::vec3 instersectionPointSphere;
+	glm::vec3 normal;
+
+	glm::vec3 pixelColorTriangle, pixelColorSphere, newOrigin;
+	Direction *D = new Direction();
+	Light *L = new Light();
+	//check if triangle intersection
+	T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColorTriangle, idT);
+
+	//check if sphere intersection
+	T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColorSphere, idS);
+
+	//since sphere and triangle has deifferent intersection this is needed 
+	if (glm::distance(r->getRayorigin(), instersectionPointTriangle)
+		> glm::distance(r->getRayorigin(), instersectionPointSphere))
+	{
+		pixelColor = pixelColorSphere;
+		normal = instersectionPointSphere - T->getSpheres().at(idS).center;
+		normal = glm::normalize(normal);
+		newOrigin = instersectionPointSphere + 0.05f*(normal);
+		r->setRayOrigin(newOrigin);
+		r->setRayDirection(glm::normalize(L->getLightPosition() - newOrigin));
+		T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
+		T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
+		if (glm::distance(r->getRayorigin(), L->getLightPosition()) < glm::distance(r->getRayorigin(), instersectionPointSphere
+		)) {
+			pixelColor = glm::vec3(0.f, 0.f, 0.f);
+		}
+
+	}
+	else {
+		pixelColor = pixelColorTriangle;
+		normal = T->getTriangles().at(idT).normal;
+		float angle =acos(glm::dot(normal, -glm::normalize(r->getDirection())) );
+		if (angle > M_PI / 2.f) normal = -normal;
+		newOrigin = instersectionPointTriangle + 0.05f*(normal);
+		r->setRayOrigin(newOrigin);
+		r->setRayDirection(glm::normalize(L->getLightPosition() - newOrigin));
+		T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
+		T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
+		if (glm::distance(r->getRayorigin(), L->getLightPosition()) > glm::distance(r->getRayorigin(), instersectionPointTriangle)
+		|| glm::distance(r->getRayorigin(), L->getLightPosition()) > glm::distance(r->getRayorigin(), instersectionPointSphere)
+		) {
+		pixelColor = glm::vec3(0.f, 0.f, 0.f);
+		}
+		
+	}
+	
+
+	
+
+	//calculate new ray from intersectionpoint
+	r->setRayDirection( D->calculateBounce(T, r, normal) );
+
+	return pixelColor + 0.2f*returnPixel(r, T,  nrbounces-1);
+}
+
+
+
 
 Camera::~Camera()
 {

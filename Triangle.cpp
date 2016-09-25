@@ -19,31 +19,31 @@ Triangle::Triangle()
 	setTriangles(roomVertices, triangles);
 	setSpheres(spheres);
 	
-	Light L;
-	L.setLight(triangles);
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
 
 	glm::vec3 l = glm::normalize(r->getDirection());
 	glm::vec3 O = r->getRayorigin();
 	glm::vec3 pos1, pos2, b;
 	float d,d1,d2,sqrtA;
 	std::vector<glm::vec3> possiblePoint;
-
+	int count = -1;
 	possiblePoint.push_back(glm::vec3(10000.0f, 1000000.0f, 100000.0f));
 	//intersection for multiple spheres?
 	for (auto & sphere : spheres)
 	{
-		//;
+		count++;
 		b = O - sphere.center;
+
 		if (pow(dot(l, b), 2) - pow(sqrt(pow(b.x, 2) + pow(b.y, 2) + pow(b.z, 2)), 2)
 			+ pow(sphere.radius, 2) < 0) continue;
 
 	    sqrtA = sqrt( pow( dot(l,b) ,2 ) - pow ( sqrt( pow(b.x,2)+ pow(b.y, 2) + pow(b.z, 2) ), 2)
 				+ pow(sphere.radius,2) );
-	
+		
+		id = count;
 		if (sqrtA == 0) {
 			pixelcolor = sphere.color;
 			d = -1* dot(l, b);
@@ -51,7 +51,7 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 		}
 		else {
 			pixelcolor = sphere.color;
-			
+
 			d1 = -1 * dot(l, b) + sqrtA;
 			d2 = -1 * dot(l, b) - sqrtA;
 			pos1 = O + d1*l;
@@ -60,11 +60,15 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 			float dist2 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
 			possiblePoint.push_back( O + (dist1 < dist2 ? d1 : d2)*l);
 		}
+		
 	}
 	if (possiblePoint.size() > 1) {
 		for (int i = 0; i < possiblePoint.size() - 1; i++) {
-			intersectionPoint = glm::distance(O,possiblePoint[i]) < glm::distance(O,possiblePoint[i + 1]) ?
-								possiblePoint[i] : possiblePoint[i + 1];
+			 if (glm::distance(O, possiblePoint[i]) > glm::distance(O, possiblePoint[i + 1])) {
+				 intersectionPoint = possiblePoint[i+1];
+
+			}
+			
 		}
 	}
 	else
@@ -75,7 +79,7 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int id) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
 	
 
 	//real declarations
@@ -130,9 +134,10 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & i
 			id = count;
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
-			pos.x = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
 			intersectionPoint = pos;
 			pixelcolor = triangle.color;
+			r->setHitT(true);
 		}
 	}
 
@@ -322,16 +327,16 @@ void Triangle::setBox(std::vector<glm::vec3>  & room) {
 
 void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & triangles) {
 	tri t;
-
+	glm::vec3 u, v;
 
 	for (int i = 0; i < room.size()-1; i=i+3) {
 		t.vert[0] = room[i];
 		t.vert[1] = room[i+1];
 		t.vert[2] = room[i+2];
 
-		t.normal[0] = (t.vert[0].x*t.vert[1].z) - (t.vert[0].z*t.vert[1].y);
-		t.normal[1] = (t.vert[0].z*t.vert[0].x) - (t.vert[0].x*t.vert[1].z);
-		t.normal[2] = (t.vert[0].x*t.vert[1].y) - (t.vert[0].y*t.vert[1].x);
+		u = t.vert[2] - t.vert[0];
+		v = t.vert[1] - t.vert[0];
+		t.normal = glm::normalize(glm::cross(u, v));
 		//std::cout << i;
 	
 		triangles.push_back(t);

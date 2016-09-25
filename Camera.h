@@ -9,8 +9,8 @@
 using std::vector;
 
 //small size for fast rendering
-const int imageSizeY = 1920;
-const int imageSizeZ = 1080;
+const int imageSizeY = 1200;
+const int imageSizeZ = 1000;
 
 class Camera
 {		
@@ -20,11 +20,11 @@ class Camera
 		Camera();
 
 		//different position is used depending on user input
-		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, -0.6f, 0.0f); }
+		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.1f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 		
 		int checkTriangleandSphereHits(int camera);
-		
+		glm::vec3 returnPixel(Ray *r, Triangle *T,  int nrBounces);
 		//creates an image and saves it into ppm format.
 		void createImage();
 		

@@ -6,7 +6,8 @@ Ray::Ray(){
 
 Ray::Ray(glm::vec3 dir, glm::vec3 O){
 	importance = 1;
-	end = false;
+	hitT = false;
+	hitS = false;
 	direction = dir;
 	origin = O;
 

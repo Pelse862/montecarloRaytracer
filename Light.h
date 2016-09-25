@@ -10,30 +10,23 @@ class Light {
 
 	public:
 
-		double radiance;
-		glm::dvec3 position;
-		double size;
-		Triangle *lightObject;
+		
 
 		//constructor
 		Light();
-		//~Light();
 
-		void setLight( std::vector<Triangle::tri> & triangles);
+		glm::vec3 getLightPosition() { return position; }
 
-		//methods
-		glm::dvec3 randomPosition(std::vector<Triangle::tri> & triangles);
+		//this is not correct just to se if things work
+		glm::vec3 getlight() { return lightIntenisity; }
 
-		glm::dvec3 calculateIntersections();
-		void computeChildrenRays();
-		int getType();
-		glm::dvec3 getColor(int);
-		int getWallIntersectionIndex();
-		double getRefractiveIndex();
-		glm::dvec3 getIntersectionNormal();
-		bool getTransparency();
+		~Light();
 
-		
+
+
+	private:
+		glm::vec3 position;
+		glm::vec3 lightIntenisity;
 
 
 };
