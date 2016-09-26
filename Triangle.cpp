@@ -22,10 +22,10 @@ Triangle::Triangle()
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
 
-	glm::vec3 l = glm::normalize(r->getDirection());
-	glm::vec3 O = r->getRayorigin();
+	glm::vec3 l = glm::normalize(r.getDirection());
+	glm::vec3 O = r.getRayorigin();
 	glm::vec3 pos1, pos2, b;
 	float d,d1,d2,sqrtA;
 	std::vector<glm::vec3> possiblePoint;
@@ -79,7 +79,7 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray *r, glm::vec3 
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
 	
 
 	//real declarations
@@ -98,7 +98,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & i
 	float u = 0;
 	float v = 0;
 	int count = -1;
-	glm::vec3 D = glm::normalize(r->getDirection() );
+	glm::vec3 D = glm::normalize(r.getDirection() );
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 		count++;
@@ -114,7 +114,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & i
 
 		inv_det = 1.f / det;
 
-		T = r->getRayorigin() - triangle.vert[0];
+		T = r.getRayorigin() - triangle.vert[0];
 
 		u = glm::dot(T, P) * inv_det;
 
@@ -137,7 +137,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray *r, glm::vec3 & i
 			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
 			intersectionPoint = pos;
 			pixelcolor = triangle.color;
-			r->setHitT(true);
+			r.setHitT(true);
 		}
 	}
 
@@ -365,7 +365,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
 
 	//Right front Blue
-	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
+	triangles.at(8).color = glm::vec3(0.f, 0.f, 0.f);
 	triangles.at(9).color = glm::vec3(0.f, 0.f, 255.f);
 
 	//Left back Green

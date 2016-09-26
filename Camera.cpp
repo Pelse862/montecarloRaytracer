@@ -36,11 +36,11 @@ void Camera::createImage() {
 int Camera::checkTriangleandSphereHits(int camera) {
 	
 	//classobjects needed
-	Direction *D = new Direction();
+	Direction D;// = new Direction();
 
-	Triangle *T = new Triangle();
+	Triangle T;// = new Triangle();
 
-	Ray *r = new Ray();
+	Ray r;
 	//ray variables
 	glm::vec3 originPoint;
 	glm::vec3 rayDirection;
@@ -55,8 +55,10 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	float tanZ = tan(fovZ / 2);
 	float tanY = tan(fovY / 2);
 	int id = -1;
-	for (float i = 0; i < imageSizeZ; i++) {	
-		for (float n = 0; n < imageSizeY; n++) {
+	float largest = 0;
+
+	for (float i = 0; i < imageSizeZ; ++i) {	
+		for (float n = 0; n < imageSizeY; ++n) {
 
 			//calculate perspective y and z.            
 			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
@@ -66,19 +68,26 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			originPoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
 			
 			//raydirection combined with the perspective vec
-			rayDirection = D->calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
+			rayDirection = D.calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
 
-			r = new Ray(rayDirection, originPoint);
-			glm::vec3 pixelColor = returnPixel(r, T , 2 );
+			r.setRayDirection(rayDirection);
+			r.setRayOrigin(originPoint); 
+			glm::vec3 pixelColor = returnPixel(r, T , 3 );
 
-		
-			image[i][n] = pixelColor;
 			
+			image[i][n] = pixelColor;
+			for (int k = 0; k < 3; ++k) {
+				if (largest < image[i][n][k])largest = image[i][n][k];
+			}
+		}
+	}
+	std::cout << largest << ": largest"<<std::endl;
+	for (float i = 0; i < imageSizeZ; ++i) {
+		for (float n = 0; n < imageSizeY; ++n) {
+			image[i][n] = 255.f*sqrt(image[i][n] / largest);
 		}
 	}
 
-
-	delete r;
 	//create image 
 	createImage();
 	
@@ -88,57 +97,63 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 
 
-glm::vec3 Camera::returnPixel(Ray *r, Triangle *T, int nrbounces) {
-
+glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
+	//std::cout << "bounce : " << nrbounces << '\n';
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
+
 	int idT = 0;
 	int idS = -1;
 	glm::vec3 pixelColor, pixelColor2;
-	glm::vec3 instersectionPointTriangle;
+	glm::vec3 instersectionPointTriangle = glm::vec3(100000.f, 100000.f, 100000.f);
 	glm::vec3 instersectionPointSphere;
 	glm::vec3 normal;
-
+	Ray r2;
+	r2.setRayDirection(r.getDirection());
+	r2.setRayOrigin(r.getRayorigin());
 	glm::vec3 pixelColorTriangle, pixelColorSphere, newOrigin;
-	Direction *D = new Direction();
-	Light *L = new Light();
+	Direction D;
+	Light L;
 	//check if triangle intersection
-	T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColorTriangle, idT);
+	T.molllerTrombore(T.getTriangles(), r, instersectionPointTriangle, pixelColorTriangle, idT);
 
 	//check if sphere intersection
-	T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColorSphere, idS);
+	T.sphereIntersect(T.getSpheres(), r, instersectionPointSphere, pixelColorSphere, idS);
 
 	//since sphere and triangle has deifferent intersection this is needed 
-	if (glm::distance(r->getRayorigin(), instersectionPointTriangle)
-		> glm::distance(r->getRayorigin(), instersectionPointSphere))
+	if (glm::distance(r.getRayorigin(), instersectionPointTriangle)
+		> glm::distance(r.getRayorigin(), instersectionPointSphere))
 	{
 		pixelColor = pixelColorSphere;
-		normal = instersectionPointSphere - T->getSpheres().at(idS).center;
+		normal = instersectionPointSphere - T.getSpheres().at(idS).center;
 		normal = glm::normalize(normal);
-		newOrigin = instersectionPointSphere + 0.05f*(normal);
-		r->setRayOrigin(newOrigin);
-		r->setRayDirection(glm::normalize(L->getLightPosition() - newOrigin));
-		T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
-		T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
-		if (glm::distance(r->getRayorigin(), L->getLightPosition()) < glm::distance(r->getRayorigin(), instersectionPointSphere
+		newOrigin = instersectionPointSphere + 0.105f*(normal);
+		r.setRayOrigin(newOrigin);
+		r.setRayDirection(glm::normalize(L.getLightPosition() - newOrigin));
+		T.molllerTrombore(T.getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
+		T.sphereIntersect(T.getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
+		if (glm::distance(r.getRayorigin(), L.getLightPosition()) < glm::distance(r.getRayorigin(), instersectionPointSphere
 		)) {
-			pixelColor = glm::vec3(0.f, 0.f, 0.f);
+			//std::cout << "SR hit sphere" << std::endl;
+			return glm::vec3(0.f, 0.f, 0.f);
 		}
 
 	}
 	else {
 		pixelColor = pixelColorTriangle;
-		normal = T->getTriangles().at(idT).normal;
-		float angle =acos(glm::dot(normal, -glm::normalize(r->getDirection())) );
+		normal = T.getTriangles().at(idT).normal;
+		float angle =acos(glm::dot(normal, -glm::normalize(r.getDirection())) );
 		if (angle > M_PI / 2.f) normal = -normal;
-		newOrigin = instersectionPointTriangle + 0.05f*(normal);
-		r->setRayOrigin(newOrigin);
-		r->setRayDirection(glm::normalize(L->getLightPosition() - newOrigin));
-		T->molllerTrombore(T->getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
-		T->sphereIntersect(T->getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
-		if (glm::distance(r->getRayorigin(), L->getLightPosition()) > glm::distance(r->getRayorigin(), instersectionPointTriangle)
-		|| glm::distance(r->getRayorigin(), L->getLightPosition()) > glm::distance(r->getRayorigin(), instersectionPointSphere)
+		newOrigin = instersectionPointTriangle + 0.1f*(normal);
+		r.setRayOrigin(newOrigin);
+		r.setRayDirection(glm::normalize(L.getLightPosition() - newOrigin));
+		T.molllerTrombore(T.getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
+		T.sphereIntersect(T.getSpheres(), r, instersectionPointSphere, pixelColor2, idT);
+		if (glm::distance(r.getRayorigin(), L.getLightPosition()) > glm::distance(r.getRayorigin(), instersectionPointTriangle)
+		|| glm::distance(r.getRayorigin(), L.getLightPosition()) > glm::distance(r.getRayorigin(), instersectionPointSphere)
 		) {
-		pixelColor = glm::vec3(0.f, 0.f, 0.f);
+			//std::cout << "SR hit triangle" << std::endl;
+
+			return glm::vec3(0.f, 0.f, 0.f);
 		}
 		
 	}
@@ -147,9 +162,9 @@ glm::vec3 Camera::returnPixel(Ray *r, Triangle *T, int nrbounces) {
 	
 
 	//calculate new ray from intersectionpoint
-	r->setRayDirection( D->calculateBounce(T, r, normal) );
+	r.setRayDirection( D.calculateBounce(T, r2, normal) );
 
-	return pixelColor + 0.2f*returnPixel(r, T,  nrbounces-1);
+	return pixelColor + 0.1f*returnPixel(r, T,  nrbounces-1);
 }
 
 

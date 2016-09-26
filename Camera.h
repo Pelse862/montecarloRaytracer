@@ -24,7 +24,7 @@ class Camera
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 		
 		int checkTriangleandSphereHits(int camera);
-		glm::vec3 returnPixel(Ray *r, Triangle *T,  int nrBounces);
+		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces);
 		//creates an image and saves it into ppm format.
 		void createImage();
 		
