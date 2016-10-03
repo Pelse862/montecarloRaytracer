@@ -314,8 +314,8 @@ void Triangle::setBox(std::vector<glm::vec3>  & room) {
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2; i = i + 3) {
 
 		V.x = vertex_array_data[i];
-		V.y = vertex_array_data[i + 1];
-		V.z = vertex_array_data[i + 2];
+		V.y = vertex_array_data[i + 1]+1;
+		V.z = vertex_array_data[i + 2]-4;
 
 		room.push_back(V);
 
@@ -365,7 +365,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
 
 	//Right front Blue
-	triangles.at(8).color = glm::vec3(0.f, 0.f, 0.f);
+	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
 	triangles.at(9).color = glm::vec3(0.f, 0.f, 255.f);
 
 	//Left back Green

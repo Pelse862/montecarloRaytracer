@@ -3,7 +3,7 @@
 
 Light::Light()
 {
-	position = glm::vec3(2.f, 1.f, 0.f);
+	position = glm::vec3(3.f, 0.f, 4.f);
 	lightIntenisity = glm::vec3(255.f,255.f,255.f);
 }
 

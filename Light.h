@@ -18,7 +18,7 @@ class Light {
 		glm::vec3 getLightPosition() { return position; }
 
 		//this is not correct just to se if things work
-		glm::vec3 getlight() { return lightIntenisity; }
+		glm::vec3 getlightIntensity() { return lightIntenisity; }
 
 		~Light();
 
