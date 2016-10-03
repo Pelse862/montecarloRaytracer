@@ -1,5 +1,3 @@
-
-
 #include "Camera.h"
 #include "Light.h"
 #include <math.h>
@@ -16,9 +14,9 @@ void Camera::createImage() {
 
 	FILE *fp = fopen("image.ppm", "wb"); /* b - binary mode */
 	(void)fprintf(fp, "P6\n%d %d\n255\n", imageSizeY, imageSizeZ);
-	for (int i = imageSizeZ-1; i >= 0; i--)
+	for (int i = imageSizeZ - 1; i >= 0; i--)
 	{
-		for (int n = imageSizeY-1; n >=0; n--)
+		for (int n = imageSizeY - 1; n >= 0; n--)
 		{
 			static unsigned char color[3];
 			color[0] = image[i][n].x;  /* red */
@@ -34,7 +32,7 @@ void Camera::createImage() {
 
 //check if the ray from the image plane hits a triangle.
 int Camera::checkTriangleandSphereHits(int camera) {
-	
+
 	//classobjects needed
 	Direction D;// = new Direction();
 
@@ -46,7 +44,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	glm::vec3 rayDirection;
 
 	//perspective values
-	
+
 	float py;
 	float pz;
 	//Y>Z
@@ -58,7 +56,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	float largest = 0;
 	Light L;
 
-	for (float i = 0; i < imageSizeZ; ++i) {	
+	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
 
 			//calculate perspective y and z.            
@@ -66,14 +64,14 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
 
 			//new origin for each pixelvalue from -1 to +1
-			originPoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
-			
+			originPoint = glm::vec3(0.0f, -1.0f + (deltaDistY / 2) + deltaDistY*n, -1.0f + (deltaDistZ / 2) + deltaDistZ*i);
+
 			//raydirection combined with the perspective vec
-			rayDirection = D.calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
+			rayDirection = D.calculateRayDirection(originPoint, camera) + glm::vec3(0.0f, py, pz);
 
 			r.setRayDirection(rayDirection);
-			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T , 2 );
+			r.setRayOrigin(originPoint);
+			glm::vec3 pixelColor = returnPixel(r, T, 2);
 
 			image[i][n] = pixelColor;
 			for (int k = 0; k < 3; ++k) {
@@ -81,7 +79,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			}
 		}
 	}
-	std::cout << largest << ": largest"<<std::endl;
+	std::cout << largest << ": largest" << std::endl;
 	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
 			image[i][n] = 255.f*sqrt(image[i][n] / largest);
@@ -90,7 +88,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 	//create image 
 	createImage();
-	
+
 	//end rendering
 	return 0;
 }
@@ -102,8 +100,8 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
 
 	int idT = 0;
-	int idS = -1;
-	glm::vec3 result =glm::vec3(1,1,1);
+	int idS = 0;
+	glm::vec3 result = glm::vec3(1, 1, 1);
 	glm::vec3 pixelColor, pixelColor2;
 	glm::vec3 instersectionPointTriangle = glm::vec3(100000.f, 100000.f, 100000.f);
 	glm::vec3 instersectionPointSphere;
@@ -124,8 +122,8 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	if (glm::distance(r.getRayorigin(), instersectionPointTriangle)
 		> glm::distance(r.getRayorigin(), instersectionPointSphere))
 	{
-		
-		
+
+
 		normal = instersectionPointSphere - T.getSpheres().at(idS).center;
 		normal = glm::normalize(normal);
 		newOrigin = instersectionPointSphere + 0.005f*(normal);
@@ -145,23 +143,21 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		pixelColor = pixelColorSphere*result;
 
 		if (glm::distance(r.getRayorigin(), L.getLightPosition()) < glm::distance(r.getRayorigin(), instersectionPointSphere
-		)) {
+			)) {
 			//std::cout << "SR hit sphere" << std::endl;
 			return pixelColor*0.05f;
 		}
 
-		
+
 
 	}
 	else {
-		
 
-		
 		normal = T.getTriangles().at(idT).normal;
 		normal = glm::normalize(normal);
-		float angle =acos(glm::dot(normal, -glm::normalize(r.getDirection())) );
+		float angle = acos(glm::dot(normal, -glm::normalize(r.getDirection())));
 		if (angle > M_PI / 2.f) normal = -normal;
-		
+
 		newOrigin = instersectionPointTriangle + 0.1f*(normal);
 		r.setRayOrigin(newOrigin);
 		r.setRayDirection(glm::normalize(L.getLightPosition() - newOrigin));
@@ -177,28 +173,23 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		result = glm::dot(L1, N)*L.getlightIntensity()*0.5f;
 		pixelColor = pixelColorTriangle*result;
 
-		
+
 		if (glm::distance(r.getRayorigin(), L.getLightPosition()) > glm::distance(r.getRayorigin(), instersectionPointTriangle)
-		|| glm::distance(r.getRayorigin(), L.getLightPosition()) > glm::distance(r.getRayorigin(), instersectionPointSphere)
-		) {
+			|| glm::distance(r.getRayorigin(), L.getLightPosition()) > glm::distance(r.getRayorigin(), instersectionPointSphere)
+			) {
 			//std::cout << "SR hit triangle" << std::endl;
 
 			return pixelColor*0.05f;
 		}
-		
-		
 
-		
+
 	}
-	
-	
-	
-	
-	
-	//calculate new ray from intersectionpoint
-	r.setRayDirection( D.calculateBounce(T, r2, normal) );
 
-	return pixelColor +0.2f*returnPixel(r, T, nrbounces - 1);
+
+	//calculate new ray from intersectionpoint
+	r.setRayDirection(D.calculateBounce(T, r2, normal));
+
+	return pixelColor + 0.2f*returnPixel(r, T, nrbounces - 1);
 }
 
 

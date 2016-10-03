@@ -20,7 +20,7 @@ class Camera
 		Camera();
 
 		//different position is used depending on user input
-		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.1f, 0.0f); }
+		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 		
 		int checkTriangleandSphereHits(int camera);
