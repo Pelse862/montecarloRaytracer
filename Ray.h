@@ -20,8 +20,8 @@ class Ray
 
 		float getHitT() { return hitT; }
 		float getHitS() { return hitS; }
-		void setHitT(bool t) { hitT = true; }
-		void setHitS(bool t) { hitS = true; }
+		void setHitT(bool t) { hitT = t; }
+		void setHitS(bool t) { hitS = t; }
 
 		~Ray();
 	private:

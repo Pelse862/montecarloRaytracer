@@ -22,66 +22,60 @@ Triangle::Triangle()
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
 
-	glm::vec3 l = glm::normalize(r.getDirection());
-	glm::vec3 O = r.getRayorigin();
-	glm::vec3 pos1, pos2, b;
-	float d,d1,d2,sqrtA;
-	std::vector<glm::vec3> possiblePoint;
+	glm::vec3 d = glm::normalize(r.getDirection());
+	glm::vec3 o = r.getRayorigin();
+	glm::vec3 c,normal;
+	float a, b, ac,sqrt;
+	
 	int count = -1;
-	possiblePoint.push_back(glm::vec3(10000.0f, 1000000.0f, 100000.0f));
+	float radius;
+	intersectionPoint = glm::vec3(10000.f, 10000.f, 10000.f);
 	//intersection for multiple spheres?
 	for (auto & sphere : spheres)
 	{
 		count++;
-		b = O - sphere.center;
+		c = sphere.center;
+		radius = sphere.radius;
 
-		if (pow(dot(l, b), 2) - pow(sqrt(pow(b.x, 2) + pow(b.y, 2) + pow(b.z, 2)), 2)
-			+ pow(sphere.radius, 2) < 0) continue;
+		b = glm::dot( (2.f * d), (o - c));
+		ac = glm::dot(o - c, o - c) - radius;
+		float d1 = -b / 2.f;
+		float d2 = d1;
 
-	    sqrtA = sqrt( pow( dot(l,b) ,2 ) - pow ( sqrt( pow(b.x,2)+ pow(b.y, 2) + pow(b.z, 2) ), 2)
-				+ pow(sphere.radius,2) );
-		
-		id = count;
-		if (sqrtA == 0) {
-			pixelcolor = sphere.color;
-			d = -1* dot(l, b);
-			possiblePoint.push_back(O + d*l);
+		float bsqrt = d1*d1 - ac;
+		if (bsqrt < 0.f)continue;
+
+		sqrt = glm::sqrt(bsqrt);
+		d1 += sqrt;
+		d2 -= sqrt;
+
+		if(d1 < d2) 
+		{
+			intersectionPoint = o+d1*d;
 		}
-		else {
-			pixelcolor = sphere.color;
-
-			d1 = -1 * dot(l, b) + sqrtA;
-			d2 = -1 * dot(l, b) - sqrtA;
-			pos1 = O + d1*l;
-			pos1 = O + d2*l;
-			float dist1 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			float dist2 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			possiblePoint.push_back( O + (dist1 < dist2 ? d1 : d2)*l);
+		else if(d2 < d1) 
+		{
+			intersectionPoint = o + d2*d;
 		}
-		
-	}
-	if (possiblePoint.size() > 1) {
-		for (int i = 0; i < possiblePoint.size() - 1; i++) {
-			 if (glm::distance(O, possiblePoint[i]) > glm::distance(O, possiblePoint[i + 1])) {
-				 intersectionPoint = possiblePoint[i+1];
-
-			}
-			
+		else 
+		{
+			intersectionPoint = o + d1*d;
 		}
+
+		normal = intersectionPoint - c;
+		intersectionPoint += 0.5f*glm::normalize(normal);
 	}
-	else
-	{
-		intersectionPoint = possiblePoint[0];
-	}
+	
+	
+
 	
 }
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
 	
-
 	//real declarations
 	glm::vec3 e1 = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 e2 = glm::vec3(0.f, 0.f, 0.f);
@@ -129,15 +123,15 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & in
 
 		t = glm::dot(e2, Q) * inv_det;
 
-		if ((t) > EPSILON && t < t1) { //ray intersection
+		if ( (t) > EPSILON && t < t1) { //ray intersection
 			t1 = t;
 			id = count;
+			r.setHitT(true);
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
 			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
 			intersectionPoint = pos;
-			pixelcolor = triangle.color;
-			r.setHitT(true);
+			pixelcolor = triangle.color;	
 		}
 	}
 
@@ -423,14 +417,14 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s;
-	s.center = glm::vec3(5.0f, -3.0f, 3.0f);
+	s.center = glm::vec3(4.0f, 2.0f, -2.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	S.push_back(s);
-	s.center = glm::vec3(4.0f, 2.0f, -3.0f);
+	/*s.center = glm::vec3(6.0f, 2.0f, -3.0f);
 	s.radius = 0.5f;
 	s.color = glm::vec3(200.0f, 100.0f, 100.0f);
-	S.push_back(s);
+	S.push_back(s);*/
 
 }
 
