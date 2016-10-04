@@ -72,7 +72,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T ,1 );
+			glm::vec3 pixelColor = returnPixel(r, T , 2 );
 
 			
 			image[i][n] = pixelColor;
@@ -179,13 +179,21 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	double intersection2triangle_2 = glm::length(interT - intersection);
 	double intersection2sphere_2 = glm::length(interS - intersection);
 	
-	if (intersection2triangle_2 < intersection2light_2) {
-		return true;
-	}
-	if (intersection2sphere_2 < intersection2light_2) {
-		return true;
+	if (intersection2sphere_2 < 0.01f) {
+		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
+			return true;
+		}
+		
 
 	}
+	if (intersection2sphere_2 > 2.01f) {
+		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
+			return true;
+		}
+	}
+	
+	
+
 	
 	return returnState;
 }
