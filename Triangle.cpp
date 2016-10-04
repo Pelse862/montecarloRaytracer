@@ -8,6 +8,7 @@
 #include <time.h>   
 
 #define EPSILON 0.00000000000000001
+# define M_PI 3.14159265358979323846  /* pi */
 
 
 Triangle::Triangle()
@@ -22,7 +23,8 @@ Triangle::Triangle()
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,
+	glm::vec3 & normalS, int & id){
 
 	glm::vec3 d = glm::normalize(r.getDirection());
 	glm::vec3 o = r.getRayorigin();
@@ -43,10 +45,9 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 		ac = glm::dot(o - c, o - c) - radius;
 		float d1 = -b / 2.f;
 		float d2 = d1;
-
+		float d3 = d1;
 		float bsqrt = d1*d1 - ac;
-		if (bsqrt < 0.f)continue;
-
+		if (bsqrt < 0.f) continue;
 		sqrt = glm::sqrt(bsqrt);
 		d1 += sqrt;
 		d2 -= sqrt;
@@ -59,19 +60,18 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 		{
 			intersectionPoint = o + d2*d;
 		}
-		else 
+		else //equal when sqrt = 0
 		{
-			intersectionPoint = o + d1*d;
+			intersectionPoint = o + d2*d;
 		}
-
-		normal = intersectionPoint - c;
-		intersectionPoint += 0.5f*glm::normalize(normal);
-	}
-	
-	
-
-	
+		r.setHitS(true);
+		normalS = glm::normalize( intersectionPoint - c);
+		intersectionPoint = intersectionPoint + 0.0001f*normalS;
+		pixelcolor = sphere.color;
+		id = count;
+	}	
 }
+
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
 void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
@@ -93,6 +93,8 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 	float v = 0;
 	int count = -1;
 	glm::vec3 D = glm::normalize(r.getDirection() );
+	intersectionPoint = glm::vec3(10000.f, 10000.f, 10000.f);
+
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 		count++;
@@ -129,7 +131,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 			r.setHitT(true);
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
-			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;		
 			intersectionPoint = pos;
 			pixelcolor = triangle.color;	
 		}
@@ -417,7 +419,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s;
-	s.center = glm::vec3(4.0f, 2.0f, -2.0f);
+	s.center = glm::vec3(5.0f, -2.0f, 2.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	S.push_back(s);

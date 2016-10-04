@@ -27,7 +27,7 @@ class Camera
 		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces);
 		//creates an image and saves it into ppm format.
 		void createImage();
-		
+		bool castShadowRay(Ray & r, glm::vec3 intersection, Triangle T);
 		~Camera();
 		
 		
