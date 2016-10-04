@@ -332,7 +332,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 		u = t.vert[2] - t.vert[0];
 		v = t.vert[1] - t.vert[0];
-		t.normal = glm::normalize(glm::cross(u, v));
+		t.normal = glm::normalize(glm::cross(v, u));
 		//std::cout << i;
 	
 		triangles.push_back(t);
@@ -419,7 +419,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s;
-	s.center = glm::vec3(5.0f, -2.0f, 2.0f);
+	s.center = glm::vec3(5.0f, 2.0f, -2.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	S.push_back(s);

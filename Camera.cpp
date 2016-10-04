@@ -134,7 +134,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		if (acos(glm::dot(normalT, directionnormalizedOut) > ( M_PI / 2.f) ))normalT = -1.f*normalT;
 		//if (acos(glm::dot(normalT, directionIn) < -(M_PI / 2.f) ))normalT = -normalT;
 
-		intersectionpointT = intersectionpointT + 0.0001f*normalT;
+		intersectionpointT = intersectionpointT +0.00001f*directionnormalizedOut;
 
 		shadow = castShadowRay(r, intersectionpointT, T);
 		normal = normalT;
@@ -164,9 +164,10 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	Light L;
 	int idS = -1.f,idT = -1.f;
 	Ray shadowRay;
-	bool returnState = true;
-	glm::vec3 interS = glm::vec3(1000.f, 1000.f, 1000.f), interT = glm::vec3(1000.f,1000.f,1000.f);
-	
+	bool returnState = false;
+	glm::vec3 interS = glm::vec3(0.f,0.f,0.f), interT = glm::vec3(0.f, 0.f, 0.f);
+	shadowRay.setHitS(false);
+	shadowRay.setHitT(false);
 	shadowRay.setRayOrigin(intersection);
 	shadowRay.setRayDirection(glm::normalize ( L.getLightPosition() - intersection) ) ;
 
@@ -175,16 +176,17 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f,0.f,0.f), idS);
 	
 	double intersection2light_2 = glm::length(L.getLightPosition() - intersection);
-	double intersection2triangle_2 = glm::length( (L.getLightPosition() - interT));
-	double intersection2sphere_2 = glm::length( (L.getLightPosition() - interS));
+	double intersection2triangle_2 = glm::length(interT - intersection);
+	double intersection2sphere_2 = glm::length(interS - intersection);
 	
-	/*
-	std::cout << "intersection2light : " << intersection2light << std::endl;
-	std::cout << "intersection2triangle : " << intersection2triangle << std::endl;
-	std::cout << "intersection2sphere : " << intersection2sphere << std::endl;
-	*/
+	if (intersection2triangle_2 < intersection2light_2) {
+		return true;
+	}
+	if (intersection2sphere_2 < intersection2light_2) {
+		return true;
+
+	}
 	
-	if (intersection2light_2 < intersection2triangle_2 && intersection2light_2 < intersection2sphere_2)returnState = false;
 	return returnState;
 }
 
