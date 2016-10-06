@@ -72,7 +72,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T , 2 );
+			glm::vec3 pixelColor = returnPixel(r, T , 10 );
 
 			
 			image[i][n] = pixelColor;
@@ -155,7 +155,6 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		std::cout << "no HIT" << std::endl;
 	}
 		
-	if (shadow)return glm::vec3(0.f, 0.f, 0.f);
 
 	glm::vec3 pl = L.getLightPosition() - intersection;
 
@@ -163,10 +162,11 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 L1 = glm::normalize(pl - intersection);
 	glm::vec3 N = glm::normalize(normal);
 
-	result += glm::dot(L1, N)*L.getlightIntensity()*0.5f;
+	result += glm::dot(L1, N)*L.getlightIntensity()*0.1f;
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(T, r, normal) );
-
+	r.setRayOrigin(intersection);
+	if (shadow)return result*0.3f + 0.05f*returnPixel(r, T, nrbounces - 1);
 	return result + 0.1f*returnPixel(r, T,  nrbounces-1);
 }
 
