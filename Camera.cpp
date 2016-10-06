@@ -101,6 +101,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//std::cout << "bounce : " << nrbounces << '\n';
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
 	Direction D;
+	Light L;
 
 	int idT = -1, idS = -1;
 
@@ -116,6 +117,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 intersectionpointT = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 intersectionpointS = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 directionnormalizedOut = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 intersection = glm::vec3(0.f, 0.f, 0.f);
 
 	//check hits versus all triangle
 	T.molllerTrombore(T.getTriangles(), r, intersectionpointT, pixelColorT, idT);
@@ -128,20 +130,23 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	if (idT != -1 && point2sphere > point2triangle)
 	{
 		result = pixelColorT;
-		normalT = ( T.getTriangles().at(idT).normal ) ;
+		normalT = glm::normalize( T.getTriangles().at(idT).normal ) ;
 		directionnormalizedOut = -glm::normalize(r.getDirection());
 
-		if (acos(glm::dot(normalT, directionnormalizedOut) > ( M_PI / 2.f) ))normalT = -1.f*normalT;
-		//if (acos(glm::dot(normalT, directionIn) < -(M_PI / 2.f) ))normalT = -normalT;
+		if (acos(glm::dot(normalT, directionnormalizedOut)) > M_PI / 2.f)normalT = -normalT;
+		
+		intersectionpointT = intersectionpointT + 0.001f*normalT;
+		
 
-		intersectionpointT = intersectionpointT +0.00001f*directionnormalizedOut;
-
+	
+		intersection = intersectionpointT;
 		shadow = castShadowRay(r, intersectionpointT, T);
 		normal = normalT;
 	}
 	else if (idS != -1)
 	{
 		result = pixelColorS;
+		intersection = intersectionpointS;
 		shadow = castShadowRay(r, intersectionpointS, T);
 		normal = normalS;
 	}
@@ -152,6 +157,13 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		
 	if (shadow)return glm::vec3(0.f, 0.f, 0.f);
 
+	glm::vec3 pl = L.getLightPosition() - intersection;
+
+	//ColorDbl light_color = pl.get_color();
+	glm::vec3 L1 = glm::normalize(pl - intersection);
+	glm::vec3 N = glm::normalize(normal);
+
+	result += glm::dot(L1, N)*L.getlightIntensity()*0.5f;
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(T, r, normal) );
 
@@ -161,9 +173,9 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 
 bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 {
-	Light L;
 	int idS = -1.f,idT = -1.f;
 	Ray shadowRay;
+	Light L;
 	bool returnState = false;
 	glm::vec3 interS = glm::vec3(0.f,0.f,0.f), interT = glm::vec3(0.f, 0.f, 0.f);
 	shadowRay.setHitS(false);
