@@ -74,7 +74,8 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
 
-			glm::vec3 pixelColor = returnPixel(r, T , 10 );
+			glm::vec3 pixelColor = returnPixel(r, T , 2 );
+
 
 
 			image[i][n] = pixelColor;
@@ -161,14 +162,18 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 pl = L.getLightPosition() - intersection;
 
 	//ColorDbl light_color = pl.get_color();
-	glm::vec3 L1 = glm::normalize(pl - intersection);
+	pl = glm::normalize(pl);
 	glm::vec3 N = glm::normalize(normal);
 
-	result += glm::dot(L1, N)*L.getlightIntensity()*0.1f;
+	result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
-	if (shadow)return result*0.3f + returnPixel(r, T, nrbounces - 1);
+
+	if (shadow)return result*0.3f + 0.05f*returnPixel(r, T, nrbounces - 1);
+	if (!material)return returnPixel(r, T, 1);
+
+
 	return result + 0.1f*returnPixel(r, T,  nrbounces-1);
 }
 
@@ -205,7 +210,6 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 			return true;
 		}
 	}
-	
 	
 	return returnState;
 }
