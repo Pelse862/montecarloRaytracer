@@ -71,7 +71,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint);
-			glm::vec3 pixelColor = returnPixel(r, T, 2);
+			glm::vec3 pixelColor = returnPixel(r, T, 1);
 
 			image[i][n] = pixelColor;
 			for (int k = 0; k < 3; ++k) {
@@ -123,10 +123,9 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		> glm::distance(r.getRayorigin(), instersectionPointSphere))
 	{
 
-
-		normal = instersectionPointSphere - T.getSpheres().at(idS).center;
-		normal = glm::normalize(normal);
-		newOrigin = instersectionPointSphere + 0.005f*(normal);
+		normal = glm::abs(glm::abs(instersectionPointSphere - T.getSpheres().at(idS).center));
+		//normal = glm::normalize(normal);
+		newOrigin = instersectionPointSphere + 0.001f*(normal);
 		r.setRayOrigin(newOrigin);
 		r.setRayDirection(glm::normalize(L.getLightPosition() - newOrigin));
 		T.molllerTrombore(T.getTriangles(), r, instersectionPointTriangle, pixelColor2, idS);
@@ -145,7 +144,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		if (glm::distance(r.getRayorigin(), L.getLightPosition()) < glm::distance(r.getRayorigin(), instersectionPointSphere
 			)) {
 			//std::cout << "SR hit sphere" << std::endl;
-			return pixelColor*0.05f;
+			return pixelColor;
 		}
 
 
@@ -153,7 +152,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	}
 	else {
 
-		normal = T.getTriangles().at(idT).normal;
+		normal = T.getTriangles().at(idT).getNormal();
 		normal = glm::normalize(normal);
 		float angle = acos(glm::dot(normal, -glm::normalize(r.getDirection())));
 		if (angle > M_PI / 2.f) normal = -normal;

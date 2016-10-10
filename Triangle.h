@@ -5,9 +5,10 @@
 #include "ColorDbl.h"
 #include "Ray.h"
 #include "glm.hpp"
-
-
+#include "SceneObject.h"
+#include "triangle_custom_shape.h"
 #include <vector>
+#include <memory>
 class Triangle
 {
 	public:
@@ -25,12 +26,13 @@ class Triangle
 			float radius;
 		};
 
-		Triangle();
+		Triangle() ;
+		Triangle(Vertex v0, Vertex v1, Vertex v2, glm::vec3 c);
 		//send all triangles to the function.
-		void molllerTrombore(std::vector<tri>  triangles, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor, int & id);
+		void molllerTrombore(std::vector<Triangle>  triangles, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor, int & id);
 
-		void setRoom(std::vector<glm::vec3>  & room);
-		void setBox(std::vector<glm::vec3>  & room);
+		void setRoom(std::vector<Triangle>  room2);
+		void setBox(std::vector<Triangle>   room);
 		
 		//check intersect for implicit sphere
 		void sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelColor, int & id);
@@ -38,8 +40,10 @@ class Triangle
 		void setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle::tri> & tri);
 
 		void setSpheres(std::vector<sphere> & S);
+
+		glm::vec3 getNormal() { return normal; };
 		
-		std::vector<tri> getTriangles();
+		std::vector<Triangle> getTriangles();
 		std::vector<sphere> getSpheres();
 
 
@@ -47,11 +51,16 @@ class Triangle
 
 
 	private:
-	
-		std::vector<glm::vec3> roomVertices;
+		Vertex v0_, v1_, v2_;
+		glm::vec3 normal;
+		glm::vec3 color;
+
+		std::vector<Triangle> roomVertices;
 		std::vector<tri> triangles;
 		std::vector<sphere> spheres;
-		ColorDbl color;
+		ColorDbl color2;
+
+		//std::vector<std::unique_ptr<SceneObject>> scene_objects_;
 
 };
 
