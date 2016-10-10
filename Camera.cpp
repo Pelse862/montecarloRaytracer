@@ -141,6 +141,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		shadow = castShadowRay(r, intersectionpointT, T);
 		material = T.getTriangleMaterial(idT);
 		normal = normalT;
+	
 	}
 	else if (idS != -1)
 	{
@@ -149,6 +150,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		shadow = castShadowRay(r, intersectionpointS, T);
 		material = T.getSphereMaterial(idS);
 		normal = normalS;
+	
 	}
 	else
 	{
@@ -158,11 +160,21 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 pl = L.getLightPosition() - intersection;
 
 	//ColorDbl light_color = pl.get_color();
-	glm::vec3 L1 = glm::normalize(pl - intersection);
+	pl = glm::normalize(pl);
 	glm::vec3 N = glm::normalize(normal);
+	if (idT != -1) {
+		result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
+	}
+	else if(idS != 0){
+		result += glm::dot(pl, N)*L.getlightIntensity()*T.getSpheres().at(idS).color;
+	}
+	else
 
-	result += glm::dot(L1, N)*L.getlightIntensity()*0.5f;
-	
+	{	//if nothing is hit failsafe
+		result = glm::vec3(0.f, 0.f, 0.f);
+	}
+
+
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
