@@ -37,9 +37,9 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, bool mat) {
 inline float getRandominclinationValue()
 {
 	std::random_device generator;
-	std::mt19937 re(generator());
+	std::mt19937 distribution(generator());
 	std::uniform_real_distribution<float> distance(0.0f, 1.0f);
-	return distance(re);
+	return distance(distribution);
 
 }
 

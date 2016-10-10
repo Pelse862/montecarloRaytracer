@@ -70,7 +70,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			for (int k = 0; k < 4; k++) {
 				originPoint = glm::vec3(0.0f,
 					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2) + deltaDistY*n,
-					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistY / 2) + deltaDistZ*i
+					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ / 2) + deltaDistZ*i
 				);
 
 				//raydirection combined with the perspective vec
@@ -78,7 +78,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 				r.setRayDirection(rayDirection);
 				r.setRayOrigin(originPoint);
-				pixelColor += returnPixel(r, T, 10);
+				pixelColor += returnPixel(r, T, 2);
 
 			}
 			
@@ -144,7 +144,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 
 		if (glm::dot(normalT, directionnormalizedOut) < 0)normalT = -normalT;
 		
-		intersectionpointT = intersectionpointT + 0.001f*normalT;
+		intersectionpointT = intersectionpointT + 0.01f*normalT;
 
 		intersection = intersectionpointT;
 		shadow = castShadowRay(r, intersectionpointT, T);
@@ -153,7 +153,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	
 	}
 	else if (idS != -1)
-	{
+	{	
 		sphereHit = true;
 		result = pixelColorS;
 		intersection = intersectionpointS;
@@ -201,10 +201,13 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	double intersection2sphere_2 = glm::length(interS - intersection);
 	
 
-	if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-		return true;
+	if (intersection2triangle_2 <= intersection2light_2 ) {
+		returnState = true;
 	}
-		
+	else if (intersection2sphere_2 <= intersection2light_2) {
+		returnState = true;
+	}
+
 	return returnState;
 }
 
