@@ -29,7 +29,6 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, bool mat) {
 	}
 	else {
 		return (directionIn - 2 * glm::dot(directionIn, normal)*normal);
-
 	}
 
 

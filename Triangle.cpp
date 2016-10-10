@@ -348,8 +348,8 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	std::cout << "triangles: " << triangles.size() << std::endl;
 	
 	//floor room
-	triangles.at(0).color = glm::vec3(0.f, 0.f, 0.f);
-	triangles.at(0).mat.isSpecular = true;
+	triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(0).mat.isDiffuse = true;
 	triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
 	triangles.at(1).mat.isDiffuse = true;
 

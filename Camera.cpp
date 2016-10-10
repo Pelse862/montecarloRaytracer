@@ -72,7 +72,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T , 2 );
+			glm::vec3 pixelColor = returnPixel(r, T , 4 );
 
 			
 			image[i][n] = pixelColor;
@@ -134,7 +134,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		normalT = glm::normalize( T.getTriangles().at(idT).normal ) ;
 		directionnormalizedOut = -glm::normalize(r.getDirection());
 
-		if (acos(glm::dot(normalT, directionnormalizedOut)) > M_PI / 2.f)normalT = -normalT;
+		if (glm::dot(normalT, directionnormalizedOut) < 0)normalT = -normalT;
 		
 		intersectionpointT = intersectionpointT + 0.001f*normalT;
 
