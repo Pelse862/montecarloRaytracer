@@ -72,7 +72,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T , 10 );
+			glm::vec3 pixelColor = returnPixel(r, T , 2 );
 
 			
 			image[i][n] = pixelColor;

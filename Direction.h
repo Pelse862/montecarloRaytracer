@@ -9,7 +9,6 @@ class Direction
 		Direction();
 
 		glm::vec3 calculateRayDirection(glm::vec3 startPos,int camera);
-
 		glm::vec3 calculateBounce( Ray r, glm::vec3 normal, bool mat);
 
 		~Direction();
@@ -18,3 +17,5 @@ class Direction
 		glm::vec3 direction = glm::vec3(0.f,0.f,0.f);
 };
 
+inline int getRandomAzimuthValue();
+inline int getRandominclinationValue();
