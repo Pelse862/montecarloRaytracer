@@ -8,6 +8,7 @@
 #include <time.h>   
 
 #define EPSILON 0.00000000000000001
+# define M_PI 3.14159265358979323846  /* pi */
 
 
 Triangle::Triangle()
@@ -22,66 +23,59 @@ Triangle::Triangle()
 }
 //calculates if the ray is on the surface of the sphere
 //using the formula ||x-c|^2| = r^2 
-void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,int & id){
+void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,
+	glm::vec3 & normalS, int & id){
 
-	glm::vec3 l = glm::normalize(r.getDirection());
-	glm::vec3 O = r.getRayorigin();
-	glm::vec3 pos1, pos2, b;
-	float d,d1,d2,sqrtA;
-	std::vector<glm::vec3> possiblePoint;
+	glm::vec3 d = glm::normalize(r.getDirection());
+	glm::vec3 o = r.getRayorigin();
+	glm::vec3 c,normal;
+	float a, b, ac,sqrt;
+	
 	int count = -1;
-	possiblePoint.push_back(glm::vec3(10000.0f, 1000000.0f, 100000.0f));
+	float radius;
+	intersectionPoint = glm::vec3(10000.f, 10000.f, 10000.f);
 	//intersection for multiple spheres?
 	for (auto & sphere : spheres)
 	{
 		count++;
-		b = O - sphere.center;
+		c = sphere.center;
+		radius = sphere.radius;
 
-		if (pow(dot(l, b), 2) - pow(sqrt(pow(b.x, 2) + pow(b.y, 2) + pow(b.z, 2)), 2)
-			+ pow(sphere.radius, 2) < 0) continue;
+		b = glm::dot( (2.f * d), (o - c));
+		ac = glm::dot(o - c, o - c) - radius;
+		float d1 = -b / 2.f;
+		float d2 = d1;
+		float d3 = d1;
+		float bsqrt = d1*d1 - ac;
+		if (bsqrt < 0.f) continue;
+		sqrt = glm::sqrt(bsqrt);
+		d1 += sqrt;
+		d2 -= sqrt;
 
-	    sqrtA = sqrt( pow( dot(l,b) ,2 ) - pow ( sqrt( pow(b.x,2)+ pow(b.y, 2) + pow(b.z, 2) ), 2)
-				+ pow(sphere.radius,2) );
-		
+		if(d1 < d2) 
+		{
+			intersectionPoint = o+d1*d;
+		}
+		else if(d2 < d1) 
+		{
+			intersectionPoint = o + d2*d;
+		}
+		else //equal when sqrt = 0
+		{
+			intersectionPoint = o + d2*d;
+		}
+		r.setHitS(true);
+		normalS = glm::normalize( intersectionPoint - c);
+		intersectionPoint = intersectionPoint + 0.0001f*normalS;
+		pixelcolor = sphere.color;
 		id = count;
-		if (sqrtA == 0) {
-			pixelcolor = sphere.color;
-			d = -1* dot(l, b);
-			possiblePoint.push_back(O + d*l);
-		}
-		else {
-			pixelcolor = sphere.color;
-
-			d1 = -1 * dot(l, b) + sqrtA;
-			d2 = -1 * dot(l, b) - sqrtA;
-			pos1 = O + d1*l;
-			pos1 = O + d2*l;
-			float dist1 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			float dist2 = pow(sqrt(pow(pos1.x, 2) + pow(pos1.y, 2) + pow(pos1.z, 2)),2);
-			possiblePoint.push_back( O + (dist1 < dist2 ? d1 : d2)*l);
-		}
-		
-	}
-	if (possiblePoint.size() > 1) {
-		for (int i = 0; i < possiblePoint.size() - 1; i++) {
-			 if (glm::distance(O, possiblePoint[i]) > glm::distance(O, possiblePoint[i + 1])) {
-				 intersectionPoint = possiblePoint[i+1];
-
-			}
-			
-		}
-	}
-	else
-	{
-		intersectionPoint = possiblePoint[0];
-	}
-	
+	}	
 }
+
 //mollertrombore intersection algorithm
 // calcualte ray intersection for rays 
-void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
+void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & intersectionPoint, glm::vec3 & pixelcolor, int & id) {
 	
-
 	//real declarations
 	glm::vec3 e1 = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 e2 = glm::vec3(0.f, 0.f, 0.f);
@@ -99,6 +93,8 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & in
 	float v = 0;
 	int count = -1;
 	glm::vec3 D = glm::normalize(r.getDirection() );
+	intersectionPoint = glm::vec3(10000.f, 10000.f, 10000.f);
+
 	//caluclate trianglehit for all triangles in the vector 
 	for (auto & triangle : triangles) {
 		count++;
@@ -129,15 +125,15 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray r, glm::vec3 & in
 
 		t = glm::dot(e2, Q) * inv_det;
 
-		if ((t) > EPSILON && t < t1) { //ray intersection
+		if ( (t) > EPSILON && t < t1) { //ray intersection
 			t1 = t;
 			id = count;
+			r.setHitT(true);
 			pos.x = (1 - u - v)*triangle.vert[0].x + u*triangle.vert[1].x + v*triangle.vert[2].x;
 			pos.y = (1 - u - v)*triangle.vert[0].y + u*triangle.vert[1].y + v*triangle.vert[2].y;
-			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;
+			pos.z = (1 - u - v)*triangle.vert[0].z + u*triangle.vert[1].z + v*triangle.vert[2].z;		
 			intersectionPoint = pos;
-			pixelcolor = triangle.color;
-			r.setHitT(true);
+			pixelcolor = triangle.color;	
 		}
 	}
 
@@ -336,7 +332,7 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 		u = t.vert[2] - t.vert[0];
 		v = t.vert[1] - t.vert[0];
-		t.normal = glm::normalize(glm::cross(u, v));
+		t.normal = glm::normalize(glm::cross(v, u));
 		//std::cout << i;
 	
 		triangles.push_back(t);
@@ -347,73 +343,109 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	std::cout << "triangles: " << triangles.size() << std::endl;
 	
 	//floor room
-	triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(0).color = glm::vec3(0.f, 0.f, 0.f);
+	triangles.at(0).mat.isSpecular = true;
 	triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(1).mat.isDiffuse = true;
 
 	//Floor left
 	triangles.at(2).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(2).mat.isDiffuse = true;
 
 	//Floor right
 	triangles.at(3).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(3).mat.isDiffuse = true;
 
 	//Wall back Cyan
 	triangles.at(4).color = glm::vec3(0.f, 255.f, 255.f);
+	triangles.at(4).mat.isDiffuse = true;
 	triangles.at(5).color = glm::vec3(0.f, 255.f, 255.f);
+	triangles.at(5).mat.isDiffuse = true;
 
 	//Right back Red
 	triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
+	triangles.at(6).mat.isDiffuse = true;
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
+	triangles.at(7).mat.isDiffuse = true;
 
 	//Right front Blue
 	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
+	triangles.at(8).mat.isDiffuse = true;
+
 	triangles.at(9).color = glm::vec3(0.f, 0.f, 255.f);
+	triangles.at(9).mat.isDiffuse = true;
 
 	//Left back Green
 	triangles.at(10).color = glm::vec3(0.f, 255.f, 0.f);
+	triangles.at(10).mat.isDiffuse = true;
+
 	triangles.at(11).color = glm::vec3(0.f, 255.f, 0.f);
+	triangles.at(11).mat.isDiffuse = true;
 
 	//Left front Yellow
 	triangles.at(12).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(12).mat.isDiffuse = true;
+
 	triangles.at(13).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(13).mat.isDiffuse = true;
 
 	//Wall front  Magenta
 	triangles.at(14).color = glm::vec3(255.f, 0.f, 255.f);
+	triangles.at(14).mat.isDiffuse = true;
 	triangles.at(15).color = glm::vec3(255.f, 0.f, 255.f);
+	triangles.at(15).mat.isDiffuse = true;
 
 	//Roof
 	triangles.at(16).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(16).mat.isDiffuse = true;
+
 	triangles.at(17).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(17).mat.isDiffuse = true;
 
 	//Roof left
 	triangles.at(18).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(18).mat.isDiffuse = true;
 
 	//Roof right
 	triangles.at(19).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(19).mat.isDiffuse = true;
 
 	//###############################
 	//golv box
 	triangles.at(20).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(21).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(20).mat.isDiffuse = true;
+	triangles.at(21).mat.isDiffuse = true;
 
 	//höger
 	triangles.at(22).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(23).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(22).mat.isDiffuse = true;
+	triangles.at(23).mat.isDiffuse = true;
 
 	//tak
 	triangles.at(24).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(25).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(24).mat.isDiffuse = true;
+	triangles.at(25).mat.isDiffuse = true;
 
 	//front magenta
 	triangles.at(26).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(27).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(26).mat.isDiffuse = true;
+	triangles.at(27).mat.isDiffuse = true;
 
 	//vänster
 	triangles.at(28).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(29).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(28).mat.isDiffuse = true;
+	triangles.at(29).mat.isDiffuse = true;
 
 	//ej synlig
 	triangles.at(30).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(31).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(30).mat.isDiffuse = true;
+	triangles.at(31).mat.isDiffuse = true;
 
 
 }	
@@ -423,14 +455,15 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s;
-	s.center = glm::vec3(5.0f, -3.0f, 3.0f);
+	s.center = glm::vec3(6.0f, -2.0f, 2.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	s.mat.isDiffuse = true;
 	S.push_back(s);
-	s.center = glm::vec3(4.0f, 2.0f, -3.0f);
+	/*s.center = glm::vec3(6.0f, 2.0f, -3.0f);
 	s.radius = 0.5f;
 	s.color = glm::vec3(200.0f, 100.0f, 100.0f);
-	S.push_back(s);
+	S.push_back(s);*/
 
 }
 

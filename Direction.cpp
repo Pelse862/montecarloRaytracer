@@ -11,7 +11,7 @@ glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos, int camera) {
 }
 
 //this should be perfect reflection model, it is wrong but easy to implement
-glm::vec3 Direction::calculateBounce(Triangle t, Ray r, glm::vec3 normal) {
+glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, bool mat) {
 	glm::vec3 directionIn;
 	directionIn = glm::normalize(r.getDirection());
 
