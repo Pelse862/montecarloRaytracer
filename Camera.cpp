@@ -1,5 +1,4 @@
 
-
 #include "Camera.h"
 #include "Light.h"
 #include <math.h>
@@ -56,7 +55,6 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	float tanY = tan(fovY / 2);
 	int id = -1;
 	float largest = 0;
-	Light L;
 
 	for (float i = 0; i < imageSizeZ; ++i) {	
 		for (float n = 0; n < imageSizeY; ++n) {
@@ -73,11 +71,9 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 			r.setRayDirection(rayDirection);
 			r.setRayOrigin(originPoint); 
-
 			glm::vec3 pixelColor = returnPixel(r, T , 2 );
 
-
-
+			
 			image[i][n] = pixelColor;
 			for (int k = 0; k < 2; ++k) {
 				if (largest < image[i][n][k])largest = image[i][n][k];
@@ -103,7 +99,6 @@ int Camera::checkTriangleandSphereHits(int camera) {
 glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//std::cout << "bounce : " << nrbounces << '\n';
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
-
 	Direction D;
 	Light L;
 
@@ -166,15 +161,14 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 N = glm::normalize(normal);
 
 	result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
+	
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
 
-	if (shadow)return result*0.3f + 0.05f*returnPixel(r, T, nrbounces - 1);
+	if (shadow)return result*0.1f + 0.05f*returnPixel(r, T, nrbounces - 1);
 	if (!material)return returnPixel(r, T, 1);
-
-
-	return result + 0.1f*returnPixel(r, T,  nrbounces-1);
+	return 0.5f*(result + 0.1f*returnPixel(r, T,  nrbounces-1));
 }
 
 
@@ -199,17 +193,12 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	double intersection2sphere_2 = glm::length(interS - intersection);
 	
 
-	if (intersection2sphere_2 < 0.01f) {
-		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-			return true;
-		}
+	if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
+		return true;
+	}
 		
-	}
-	if (intersection2sphere_2 > 2.01f) {
-		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-			return true;
-		}
-	}
+	
+
 	
 	return returnState;
 }
@@ -219,3 +208,4 @@ Camera::~Camera()
 {
 	std::cout << "camera ended : ";
 }
+
