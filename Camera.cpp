@@ -160,7 +160,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	pl = glm::normalize(pl);
 	glm::vec3 N = glm::normalize(normal);
 
-	result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
+//	result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
 	
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
