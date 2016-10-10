@@ -159,23 +159,8 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		std::cout << "no HIT" << std::endl;
 	}
 		
-	glm::vec3 pl = L.getLightPosition() - intersection;
 
-	//ColorDbl light_color = pl.get_color();
-	pl = glm::normalize(pl);
-	glm::vec3 N = glm::normalize(normal);
-	if (!sphereHit && idT != -1) {
-		result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
-	}
-	else if(sphereHit && idS != -1){
-		result += glm::dot(pl, N)*L.getlightIntensity()*T.getSpheres().at(idS).color;
-	}
-	else
-
-	{	//if nothing is hit failsafe
-		result = glm::vec3(0.f, 0.f, 0.f);
-	}
-
+	result = L.getLocalLight(intersection, T, idS, idT, normal, sphereHit);
 
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
