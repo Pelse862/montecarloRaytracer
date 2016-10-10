@@ -29,8 +29,8 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 	glm::vec3 d = glm::normalize(r.getDirection());
 	glm::vec3 o = r.getRayorigin();
 	glm::vec3 c,normal;
-	float a, b, ac,sqrt;
-	
+	float a, b, ac,sqrt, bsqrt;
+	float d1, d2;
 	int count = -1;
 	float radius;
 	intersectionPoint = glm::vec3(10000.f, 10000.f, 10000.f);
@@ -42,25 +42,30 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 		radius = sphere.radius;
 
 		b = glm::dot( (2.f * d), (o - c));
-		ac = glm::dot(o - c, o - c) - radius;
-		float d1 = -b / 2.f;
-		float d2 = d1;
-		float d3 = d1;
-		float bsqrt = d1*d1 - ac;
+		ac = glm::dot(o - c, o - c) - glm::pow(radius,2);
+		d1 = -b / 2.f;
+		d2 = d1;
+	
+		bsqrt = d1*d1 - ac;
 		if (bsqrt < 0.f) continue;
+		
 		sqrt = glm::sqrt(bsqrt);
 		d1 += sqrt;
 		d2 -= sqrt;
 
-		if(d1 < d2) 
+		if(d1 <= 0 && d2 <= 0)
 		{
-			intersectionPoint = o+d1*d;
+			continue;
 		}
 		else if(d2 < d1) 
 		{
 			intersectionPoint = o + d2*d;
 		}
-		else //equal when sqrt = 0
+		else if(d1 < d2)
+		{
+			intersectionPoint = o + d1*d;
+		}
+		else
 		{
 			intersectionPoint = o + d2*d;
 		}
@@ -457,7 +462,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s.center = glm::vec3(6.0f, -2.0f, 2.0f);
 	s.radius = 1.0f;
 	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s.mat.isDiffuse = true;
+	s.mat.isDiffuse = false;
 	S.push_back(s);
 	/*s.center = glm::vec3(6.0f, 2.0f, -3.0f);
 	s.radius = 0.5f;

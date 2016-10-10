@@ -161,14 +161,15 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 L1 = glm::normalize(pl - intersection);
 	glm::vec3 N = glm::normalize(normal);
 
-	result += glm::dot(L1, N)*L.getlightIntensity()*0.1f;
+	result += glm::dot(L1, N)*L.getlightIntensity()*0.5f;
+	
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
-	if (shadow)return result*0.3f + 0.05f*returnPixel(r, T, nrbounces - 1);
-	if (!material)return returnPixel(r, T, 1);
 
-	return result + 0.1f*returnPixel(r, T,  nrbounces-1);
+	if (shadow)return result*0.1f + 0.05f*returnPixel(r, T, nrbounces - 1);
+	if (!material)return returnPixel(r, T, 1);
+	return 0.5f*(result + 0.1f*returnPixel(r, T,  nrbounces-1));
 }
 
 
@@ -193,17 +194,12 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	double intersection2sphere_2 = glm::length(interS - intersection);
 	
 
-	if (intersection2sphere_2 < 0.01f) {
-		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-			return true;
-		}
+	if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
+		return true;
+	}
 		
-	}
-	if (intersection2sphere_2 > 2.01f) {
-		if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-			return true;
-		}
-	}
+	
+
 	
 	return returnState;
 }
