@@ -166,6 +166,8 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
 	if (shadow)return result*0.3f + 0.05f*returnPixel(r, T, nrbounces - 1);
+	if (!material)return returnPixel(r, T, 1);
+
 	return result + 0.1f*returnPixel(r, T,  nrbounces-1);
 }
 
@@ -202,7 +204,6 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 			return true;
 		}
 	}
-	
 	
 	return returnState;
 }
