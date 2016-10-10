@@ -458,16 +458,18 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 //adds spheres to the scene
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
-	sphere s;
-	s.center = glm::vec3(6.0f, -2.0f, 2.0f);
-	s.radius = 1.0f;
-	s.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s.mat.isDiffuse = false;
-	S.push_back(s);
-	/*s.center = glm::vec3(6.0f, 2.0f, -3.0f);
-	s.radius = 0.5f;
-	s.color = glm::vec3(200.0f, 100.0f, 100.0f);
-	S.push_back(s);*/
+	sphere s1,s2;
+	s1.center = glm::vec3(6.0f, -2.0f, 2.0f);
+	s1.radius = 1.0f;
+	s1.color = glm::vec3(0.0f, 0.0f, 0.0f);
+	s1.mat.isDiffuse = false;
+	S.push_back(s1);
+
+	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);
+	s2.radius = 0.5f;
+	s2.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	s2.mat.isDiffuse = true;
+	S.push_back(s2);
 
 }
 

@@ -119,6 +119,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 directionnormalizedOut = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 intersection = glm::vec3(0.f, 0.f, 0.f);
 	bool material;
+	bool sphereHit = false;
 	//check hits versus all triangle
 	T.molllerTrombore(T.getTriangles(), r, intersectionpointT, pixelColorT, idT);
 	//check hits vs all spheres
@@ -145,6 +146,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	}
 	else if (idS != -1)
 	{
+		sphereHit = true;
 		result = pixelColorS;
 		intersection = intersectionpointS;
 		shadow = castShadowRay(r, intersectionpointS, T);
@@ -162,10 +164,10 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//ColorDbl light_color = pl.get_color();
 	pl = glm::normalize(pl);
 	glm::vec3 N = glm::normalize(normal);
-	if (idT != -1) {
+	if (!sphereHit && idT != -1) {
 		result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color;
 	}
-	else if(idS != 0){
+	else if(sphereHit && idS != -1){
 		result += glm::dot(pl, N)*L.getlightIntensity()*T.getSpheres().at(idS).color;
 	}
 	else
