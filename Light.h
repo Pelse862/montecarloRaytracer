@@ -22,11 +22,7 @@ class Light {
 
 		~Light();
 
-
-
 	private:
 		glm::vec3 position;
 		glm::vec3 lightIntenisity;
-
-
 };

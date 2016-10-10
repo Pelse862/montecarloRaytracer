@@ -18,10 +18,10 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, bool mat) {
 	glm::vec3 v1,v2,axis;
 	float randomValInc = getRandominclinationValue();
 	float randomValAzi = getRandomAzimuthValue();
-
 	directionIn = glm::normalize(r.getDirection());
+
 	if (mat) {
-		v1 = -directionIn - (-directionIn*normal)*normal;
+		v1 = -directionIn - glm::dot(-directionIn, normal)*normal;
 		axis = v2 = v1 = -v1;
 		v1 = v1 * cos(randomValInc) + glm::cross(axis, v1)*sin(randomValInc) + axis*(axis*v1)*(1 - cos(randomValInc));
 		v1 += v1 * cos(randomValAzi) + glm::cross(normal, v1)*sin(randomValAzi) + normal*(normal*v1) - (1 - cos(randomValAzi));
