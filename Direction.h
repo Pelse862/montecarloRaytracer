@@ -9,7 +9,7 @@ class Direction
 		Direction();
 
 		glm::vec3 calculateRayDirection(glm::vec3 startPos,int camera);
-		glm::vec3 calculateBounce( Ray r, glm::vec3 normal, bool mat);
+		glm::vec3 calculateBounce( Ray r, glm::vec3 normal, Triangle::material mat);
 
 		~Direction();
 	private: 

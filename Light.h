@@ -21,7 +21,7 @@ class Light {
 
 		//this is not correct just to se if things work
 		glm::vec3 getlight() { return lightIntenisity; }
-
+		glm::vec3 getAreaLightIntensity() { return areaLightIntensity; };
 		~Light();
 
 
@@ -29,6 +29,6 @@ class Light {
 	private:
 		glm::vec3 position;
 		glm::vec3 lightIntenisity;
-
+		glm::vec3 areaLightIntensity;
 
 };
