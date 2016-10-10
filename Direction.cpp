@@ -35,19 +35,21 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, bool mat) {
 
 }
 //should not be uniform
-inline int getRandominclinationValue()
+inline float getRandominclinationValue()
 {
-	std::default_random_engine generator;
-	std::uniform_int_distribution<int> distribution(0, 90);
-	float value = distribution(generator);  
-	return value;
+	std::random_device generator;
+	std::mt19937 re(generator());
+	std::uniform_real_distribution<float> distance(0.0f, 1.0f);
+	return distance(re);
+
 }
-inline int getRandomAzimuthValue()
+
+inline float getRandomAzimuthValue()
 {
-	std::default_random_engine generator;
-	std::uniform_int_distribution<int> distribution(-90, 90);
-	int value = distribution(generator);
-	return value;
+	std::random_device generator;
+	std::mt19937  distribution(generator());
+	std::uniform_real_distribution<float> distance(-1.0f, 1.0f);
+	return distance(distribution);
 }
 
 Direction::~Direction()
