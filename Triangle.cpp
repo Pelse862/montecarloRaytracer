@@ -47,12 +47,15 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 		d2 = d1;
 	
 		bsqrt = d1*d1 - ac;
+		//if bsqrt is negative it will be complex => no hit
 		if (bsqrt < 0.f) continue;
 		
 		sqrt = glm::sqrt(bsqrt);
 		d1 += sqrt;
 		d2 -= sqrt;
 
+		//d1 or d2 is negative intersection is in a negative
+		//direction seen from the given direction
 		if(d1 <= 0 && d2 <= 0)
 		{
 			continue;
@@ -71,7 +74,8 @@ void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3
 		}
 		r.setHitS(true);
 		normalS = glm::normalize( intersectionPoint - c);
-		intersectionPoint = intersectionPoint + 0.0001f*normalS;
+		//move point some distance from surface
+		intersectionPoint = intersectionPoint + 0.01f*normalS;
 		pixelcolor = sphere.color;
 		id = count;
 	}	
@@ -146,13 +150,13 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 
 void Triangle::setAreaLight(std::vector<glm::vec3>  & room) {
 	float vertex_array_data[] = {
-		6.f, -0.5f,-4.95f,
-		5.f, 0.5f,-4.95f,
-		6.f, 0.5f,-4.95f,
+		6.f, -0.5f,-4.99f,
+		5.f, 0.5f,-4.99f,
+		6.f, 0.5f,-4.99f,
 
-		5.f, -0.5f,-4.95f,
-		6.f, -0.5f,-4.95f,
-		5.f, 0.5f,-4.95f
+		5.f, -0.5f,-4.99f,
+		6.f, -0.5f,-4.99f,
+		5.f, 0.5f,-4.99f
 
 	};
 	glm::vec3 V;
@@ -404,20 +408,20 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	triangles.at(19).mat.isDiffuse = true;
 
 	//###############################
-	//golv box
+	//floor tetra
 	triangles.at(20).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(20).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(20).mat.isDiffuse = true;
 
 
-	//höger
+	//right
 	triangles.at(21).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(21).mat.isDiffuse = true;
 
-	//tak
+	//left
 	triangles.at(22).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(22).mat.isDiffuse = true;
 
-	//front magenta
+	//back
 	triangles.at(23).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(23).mat.isDiffuse = true;
 

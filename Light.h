@@ -2,15 +2,10 @@
 #include <stdlib.h>
 #include <iostream>
 #include "Triangle.h"
-
-
-#define LIGHT_SHAPE 3
-
+#pragma once
 class Light {
 
 	public:
-
-		
 
 		//constructor
 		Light();

@@ -1,7 +1,7 @@
 
-
+#pragma once
 #include "Camera.h"
-#include "Light.h"
+
 #include <math.h>
 #pragma warning( disable  : 4996 )
 # define M_PI 3.14159265358979323846  /* pi */
@@ -71,8 +71,8 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			//new origin for each pixelvalue from -1 to +1
 			for (int k = 0; k < 4; k++) {
 				originPoint = glm::vec3(0.0f,
-					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2.f ) + deltaDistY*n,
-					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ / 2.f ) + deltaDistZ*i
+					-1.0f + (deltaDistY / 2) + getRandomFloat( deltaDistY ) - deltaDistY/2.f + deltaDistY*n,
+					-1.0f + (deltaDistZ / 2) + getRandomFloat( deltaDistZ ) - deltaDistZ/2.f + deltaDistZ*i
 				);
 
 				//raydirection combined with the perspective vec
@@ -80,7 +80,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 				r.setRayDirection(rayDirection);
 				r.setRayOrigin(originPoint);
-				pixelColor += returnPixel(r, T, 2);
+				pixelColor += returnPixel(r, T, 5);
 
 			}
 			
@@ -98,9 +98,9 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			pixelColor = glm::vec3(0.f, 0.f, 0.f);
 		}
 		persenc += 100.f / imageSizeZ;
-		std::cout << "percent done of image rendering : "<< persenc << " %" <<  std::endl;
+		std::cout << "\rpercent done of image rendering : "<< persenc << " %";
 	}
-	std::cout << largestR << ": largest Red"<<std::endl;
+	//std::cout << largestR << ": largest Red"<<std::endl;
 	//std::cout << largestG << ": largest Green" << std::endl;
 	//std::cout << largestB << ": largest Blue" << std::endl;
 
@@ -113,7 +113,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	//create image 
 	createImage();
 	
-	//end rendering
+	//end rendering this image
 	return 0;
 }
 
@@ -126,7 +126,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	Light L;
 	Triangle::material material;
 	int idT = -1, idS = -1;
-
+	float lightFromAreaLight = 0.f;
 	r.setHitS(false);
 	r.setHitT(false);
 	bool shadow = false;;
@@ -157,7 +157,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		if (glm::dot(normalT, directionnormalizedOut) <= 0)normalT = -normalT;
 		intersectionpointT = intersectionpointT + 0.01f*normalT;
 		intersection = intersectionpointT;
-		shadow = castShadowRay(r, intersectionpointT, T);
+		shadow = castShadowRay(r, lightFromAreaLight, intersectionpointT, T, L);
 		material = T.getTriangleMaterial(idT);	
 		normal = normalT;
 	
@@ -167,18 +167,19 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		sphereHit = true;
 		result = pixelColorS;
 		intersection = intersectionpointS;
-		shadow = castShadowRay(r, intersectionpointS, T);
+		shadow = castShadowRay(r, lightFromAreaLight, intersectionpointS, T, L );
 		material = T.getSphereMaterial(idS);
 		normal = normalS;
 	
 	}
 	else
 	{
-		std::cout << "no HIT" << std::endl;
+		//std::cout << "no HIT" << std::endl;
 		return glm::vec3(0.f, 0.f, 0.f);
 	}
 		
 	result = L.getLocalLight(r, intersection, T, idS, idT, normal, sphereHit);
+	
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
@@ -186,7 +187,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//check if ray hits a lightSource
 	if (material.isLightSource) {
 		//end ray
-		return L.getAreaLightIntensity();
+		return L.getAreaLightIntensity()*1000.f;
 	}
 	//check if material is a mirror
 	else if (material.isSpecular) {
@@ -206,35 +207,98 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 }
 
 
-bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
+bool Camera::castShadowRay(Ray & r,float & lightFromAreaLight, glm::vec3 intersection, Triangle T, Light L)
 {
-	int idS = -1.f,idT = -1.f;
+	bool returnStatepointLight = false;
+	pointLight(returnStatepointLight, L,  T, intersection);
+	areaLightpoints(T, lightFromAreaLight, intersection ,returnStatepointLight);
+
+
+	return returnStatepointLight;
+}
+//check if point is in shadow for the pointlight
+inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersection)
+{
+	int idS = -1.f, idT = -1.f;
 	Ray shadowRay;
-	Light L;
-	bool returnState = false;
-	glm::vec3 interS = glm::vec3(0.f,0.f,0.f), interT = glm::vec3(0.f, 0.f, 0.f);
+	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
 	shadowRay.setHitS(false);
 	shadowRay.setHitT(false);
 	shadowRay.setRayOrigin(intersection);
-	shadowRay.setRayDirection(glm::normalize ( L.getLightPosition() - intersection) ) ;
-
+	shadowRay.setRayDirection(glm::normalize(L.getLightPosition() - intersection));
 	T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
+	T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), idS);
+	float inter2light = glm::length(L.getLightPosition() - intersection);
+	float inter2tri = glm::length(interT - intersection);
+	float inter2sph = glm::length(interS - intersection);
 
-	T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f,0.f,0.f), idS);
-	
-	double intersection2light_2 = glm::length(L.getLightPosition() - intersection);
-	double intersection2triangle_2 = glm::length(interT - intersection);
-	double intersection2sphere_2 = glm::length(interS - intersection);
-	
-
-	if (intersection2triangle_2 <= intersection2light_2 ) {
+	if (inter2tri <= inter2light) {
 		returnState = true;
 	}
-	else if (intersection2sphere_2 <= intersection2light_2) {
+	else if (inter2sph <= inter2light) {
 		returnState = true;
 	}
+}
+inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersection, bool & returnState)
+{
+	std::vector<glm::vec3> points;
+	glm::vec3 p;
+	Triangle::tri t1 = T.getTriangles().at(T.getTriangles().size() - 1);
+	Triangle::tri t2 = T.getTriangles().at(T.getTriangles().size() - 2);
+	glm::vec3 normal = glm::normalize(t1.normal);
+	for (int i = 0; i < 3; i++) {
+		Barycentric(t1, p);
+		p += 0.0001f*normal;
+		points.push_back(p);
+	}
+	normal = glm::normalize(t2.normal);
+	for (int i = 0; i < 3; i++) {
+		Barycentric(t2, p);
+		p += 0.0001f*-normal;
+		//std::cout << p.x << " " << p.y << " " << p.z << std::endl;
+		points.push_back(p);
+	}
+	//calculate interectiona and contribution
+	Ray shadowRay;
+	int idS = -1.f, idT = -1.f;
+	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
+	shadowRay.setRayOrigin(intersection);
+	float inter2light;
+	float inter2tri;
+	float inter2sph;
+	for (auto & point : points)
+	{
+		shadowRay.setRayDirection(glm::normalize(point - intersection));
+		T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
+		T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), idS);
+		inter2light = glm::length(point - intersection);
+		inter2tri = glm::length(interT - intersection);
+		inter2sph = glm::length(interS - intersection);
+		if (inter2tri > inter2light && inter2sph > inter2light) {
+			contribution += 1.f/ points.size();
+		}
+		else if (inter2tri <= inter2light) {
+			returnState = true;
+		}
+		else if (inter2sph <= inter2light) {
+			returnState = true;
+		}
+	}
+	//std::cout << contribution << std::endl;
+	
+}
+//according to cramers rule (I think)
+inline void Barycentric(Triangle::tri t, glm::vec3 & point)
+{
+	float r1 = getRandomFloat(1.f);
+	float r2 = getRandomFloat(1.f);
+	float ax = t.vert[0].x, bx = t.vert[1].x, cx = t.vert[2].x;
+	float ay = t.vert[0].y, by = t.vert[1].y, cy = t.vert[2].y;
+	float az = t.vert[0].z, bz = t.vert[1].z, cz = t.vert[2].z;
 
-	return returnState;
+	point.x = (1 - sqrt(r1)) * ax + (sqrt(r1) * (1 - r2)) * bx + (sqrt(r1) * r2) * cx;
+	point.y = (1 - sqrt(r1)) * ay + (sqrt(r1) * (1 - r2)) * by + (sqrt(r1) * r2) * cy;
+	point.z = (1 - sqrt(r1)) * az + (sqrt(r1) * (1 - r2)) * bz + (sqrt(r1) * r2) * cz;
 }
 
 
@@ -245,6 +309,6 @@ Camera::~Camera()
 inline float getRandomFloat(float deltadist)
 {
 	std::random_device generator;
-	std::uniform_real_distribution<float> distance(-deltadist, deltadist);
+	std::uniform_real_distribution<float> distance(0, deltadist);
 	return distance(generator);
 }
