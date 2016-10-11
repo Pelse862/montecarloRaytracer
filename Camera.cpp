@@ -198,9 +198,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//check if in shadow
 	else if (shadow) {
 		//send a lower pixel value
-//		std::cout << "first: " << r.getImportance() << std::endl;
 		r.setImportance(0.1f*r.getImportance());
-	//	std::cout << "after: " << r.getImportance() << std::endl;
 		glm::vec3 pixelColor = 0.5f*result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
 		
 		return pixelColor;
@@ -208,7 +206,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//for diffuse surfaces
 	else {
 		//continue
-		r.setImportance(0.2f*r.getImportance());
+		r.setImportance(0.3f*r.getImportance());
 		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
 		
 		return pixelColor;
