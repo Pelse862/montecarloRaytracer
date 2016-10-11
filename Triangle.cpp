@@ -16,7 +16,8 @@ Triangle::Triangle()
 	
 	setRoom(roomVertices);
 	setBox(roomVertices);
-	
+	setAreaLight(roomVertices);
+
 	setTriangles(roomVertices, triangles);
 	setSpheres(spheres);
 	
@@ -144,7 +145,30 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 
 }
 
+void Triangle::setAreaLight(std::vector<glm::vec3>  & room) {
+	float vertex_array_data[] = {
+		6.f, -0.5f,-4.95f,
+		5.f, 0.5f,-4.95f,
+		6.f, 0.5f,-4.95f,
 
+		5.f, -0.5f,-4.95f,
+		6.f, -0.5f,-4.95f,
+		5.f, 0.5f,-4.95f
+
+	};
+	glm::vec3 V;
+	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
+
+	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2; i = i + 3) {
+
+		V.x = vertex_array_data[i];
+		V.y = vertex_array_data[i + 1];
+		V.z = vertex_array_data[i + 2];
+
+		room.push_back(V);
+
+	}
+}
 
 //vertex data for the room
 void Triangle::setRoom(std::vector<glm::vec3>  & room) {
@@ -257,25 +281,21 @@ void Triangle::setBox(std::vector<glm::vec3>  & room) {
 
 	float vertex_array_data[] = {
 
-		//box
+		7.f, -4.f, -5.f,	//floor
+		5.f, -2.5f, -5.f,
+		7.f, -1.f, -5.f,
 
-		1.f,-1.f,-1.f, //front
-		1.5f,-0.5f,0.f,
-		1.f,0.f,-1.f,
+		5.f, -2.5f, -5.f,	//front left
+		6.f, -2.5f, -3.f,
+		7.f, -1.f, -5.f,
 
-		0.5f,-0.25f,-1.f, //floor
-		1.f,-1.f,-1.f,
-		1.f,0.f,-1.f,
+		5.f, -2.5f, -5.f,	//front right
+		7.f, -4.f, -5.f,
+		6.f, -2.5f, -3.f,
 
-		1.f,0.f,-1.f, //left
-		1.5f,-0.5f,0.f,
-		0.5f,-0.25f,-1.f,
-
-		0.5f,-0.25f,-1.f, //right
-		1.5f,-0.5f,0.f,
-		1.f,-1.f,-1.f
-
-
+		7.f, -4.f , -5.f, //back
+		7.f ,-1.f , -5.f,
+		6.f ,-2.5f , -3.f,
 	};
 
 	glm::vec3 V;
@@ -283,9 +303,9 @@ void Triangle::setBox(std::vector<glm::vec3>  & room) {
 
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2; i = i + 3) {
 
-		V.x = vertex_array_data[i]+1.75f;
+		V.x = vertex_array_data[i];
 		V.y = vertex_array_data[i + 1] ;
-		V.z = vertex_array_data[i + 2] -1.25f;
+		V.z = vertex_array_data[i + 2] ;
 
 		room.push_back(V);
 
@@ -317,17 +337,17 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	std::cout << "triangles: " << triangles.size() << std::endl;
 	
 	//floor room
-	triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(0).color = glm::vec3(230.f, 230.f, 230.f);
 	triangles.at(0).mat.isDiffuse = true;
-	triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(1).color = glm::vec3(230.f, 230.f, 230.f);
 	triangles.at(1).mat.isDiffuse = true;
 
 	//Floor left
-	triangles.at(2).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(2).color = glm::vec3(230.f, 230.f, 230.f);
 	triangles.at(2).mat.isDiffuse = true;
 
 	//Floor right
-	triangles.at(3).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(3).color = glm::vec3(230.f, 230.f, 230.f);
 	triangles.at(3).mat.isDiffuse = true;
 
 	//Wall back Cyan
@@ -338,9 +358,9 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 	//Right back Red
 	triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(6).mat.isDiffuse = false;
+	triangles.at(6).mat.isSpecular = true;
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(7).mat.isDiffuse = false;
+	triangles.at(7).mat.isSpecular = true;
 
 	//Right front Blue
 	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
@@ -387,40 +407,28 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	//###############################
 	//golv box
 	triangles.at(20).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(21).color = glm::vec3(255.f, 255.f, 0.f);
 	triangles.at(20).mat.isDiffuse = true;
-	triangles.at(21).mat.isDiffuse = true;
+
 
 	//höger
-	triangles.at(22).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(23).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(22).mat.isDiffuse = true;
-	triangles.at(23).mat.isDiffuse = true;
-	/*
+	triangles.at(21).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(21).mat.isDiffuse = true;
+
 	//tak
-	triangles.at(24).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(25).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(24).mat.isDiffuse = true;
-	triangles.at(25).mat.isDiffuse = true;
+	triangles.at(22).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(22).mat.isDiffuse = true;
 
-	//front magenta
-	triangles.at(26).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(27).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(26).mat.isDiffuse = true;
-	triangles.at(27).mat.isDiffuse = true;
+	triangles.at(23).color = glm::vec3(255.f, 255.f, 0.f);
+	triangles.at(23).mat.isDiffuse = true;
 
-	//vänster
-	triangles.at(28).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(29).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(28).mat.isDiffuse = true;
-	triangles.at(29).mat.isDiffuse = true;
+	//##############
+	//areaLight
+	triangles.at(24).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(24).mat.isLightSource = true;
 
-	//ej synlig
-	triangles.at(30).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(31).color = glm::vec3(255.f, 255.f, 0.f);
-	triangles.at(30).mat.isDiffuse = true;
-	triangles.at(31).mat.isDiffuse = true;
-	*/
+	triangles.at(25).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(25).mat.isLightSource = true;
+
 
 }	
 
@@ -432,7 +440,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s1.center = glm::vec3(6.0f, -2.0f, 2.0f);
 	s1.radius = 1.0f;
 	s1.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s1.mat.isDiffuse = true;
+	s1.mat.isSpecular = true;
 	S.push_back(s1);
 
 	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);

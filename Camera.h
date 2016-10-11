@@ -9,6 +9,8 @@
 #include <vector>
 #include <random>
 
+#define I
+
 using std::vector;
 
 //small size for fast rendering
@@ -35,7 +37,6 @@ class Camera
 		
 		
 	private:
-
 		float deltaDistY = 2.0f / imageSizeY;
 		float deltaDistZ = 2.0f / imageSizeZ;
 		vector<vector<glm::vec3> > image =

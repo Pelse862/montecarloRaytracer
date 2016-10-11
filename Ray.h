@@ -18,6 +18,8 @@ class Ray
 		//float, importance for vector
 		float getImportance() { return importance; }
 
+		void setImportance(float i) { importance = i; }
+
 		float getHitT() { return hitT; }
 		float getHitS() { return hitS; }
 		void setHitT(bool t) { hitT = t; }

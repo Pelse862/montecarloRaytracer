@@ -37,7 +37,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	Direction D;// = new Direction();
 
 	Triangle T;// = new Triangle();
-
+	float persenc = 0;
 	Ray r;
 	//ray variables
 	glm::vec3 originPoint;
@@ -53,7 +53,9 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	float tanZ = tan(fovZ / 2);
 	float tanY = tan(fovY / 2);
 	int id = -1;
-	float largest = 0;
+	float largestR = 0;
+	float largestG = 0;
+	float largestB = 0;
 
 	for (float i = 0; i < imageSizeZ; ++i) {	
 		for (float n = 0; n < imageSizeY; ++n) {
@@ -67,8 +69,8 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			//new origin for each pixelvalue from -1 to +1
 			for (int k = 0; k < 4; k++) {
 				originPoint = glm::vec3(0.0f,
-					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2) + deltaDistY*n,
-					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistY / 2) + deltaDistZ*i
+					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2.f ) + deltaDistY*n,
+					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ / 2.f ) + deltaDistZ*i
 				);
 
 				//raydirection combined with the perspective vec
@@ -76,22 +78,34 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 				r.setRayDirection(rayDirection);
 				r.setRayOrigin(originPoint);
+				r.setImportance(1.0f);
 				pixelColor += returnPixel(r, T, 2);
 
 			}
 			
 			
-			image[i][n] = pixelColor;
+			image[i][n] = pixelColor/4.f;
+			//get largest value for each channel separatly
+			/*
+			largestR = (largestR < image[i][n][0]) ?  image[i][n][0] : largestR;
+			largestG = (largestG < image[i][n][1]) ?  image[i][n][1] : largestG;
+			largestB = (largestB < image[i][n][2]) ?  image[i][n][2] : largestB;
+			*/
 			for (int k = 0; k < 2; ++k) {
-				if (largest < image[i][n][k])largest = image[i][n][k];
+				if (largestR < image[i][n][k])largestR = image[i][n][k];
 			}
 			pixelColor = glm::vec3(0.f, 0.f, 0.f);
 		}
+		persenc += 100.f / imageSizeZ;
+		std::cout << "\r percent done of image rendering : "<< persenc << " %" ;
 	}
-	std::cout << largest << ": largest"<<std::endl;
+	std::cout << largestR << ": largest Red"<<std::endl;
+	//std::cout << largestG << ": largest Green" << std::endl;
+	//std::cout << largestB << ": largest Blue" << std::endl;
+
 	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
-			image[i][n] = 255.f*sqrt(image[i][n] / largest);
+			image[i][n] = 255.f*sqrt(image[i][n] / largestR);
 		}
 	}
 
@@ -109,7 +123,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
 	Direction D;
 	Light L;
-
+	Triangle::material material;
 	int idT = -1, idS = -1;
 
 	r.setHitS(false);
@@ -125,7 +139,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	glm::vec3 intersectionpointS = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 directionnormalizedOut = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 intersection = glm::vec3(0.f, 0.f, 0.f);
-	bool material;
+	
 	bool sphereHit = false;
 	//check hits versus all triangle
 	T.molllerTrombore(T.getTriangles(), r, intersectionpointT, pixelColorT, idT);
@@ -134,24 +148,21 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 
 	float point2sphere = glm::length(intersectionpointS - r.getRayorigin());
 	float point2triangle = glm::length(intersectionpointT - r.getRayorigin());
-	if (idT != -1 && point2sphere > point2triangle)
+	if (point2sphere > point2triangle)
 	{
 		result = pixelColorT;
 		normalT = glm::normalize( T.getTriangles().at(idT).normal ) ;
 		directionnormalizedOut = -glm::normalize(r.getDirection());
-
-		if (glm::dot(normalT, directionnormalizedOut) < 0)normalT = -normalT;
-		
-		intersectionpointT = intersectionpointT + 0.001f*normalT;
-
+		if (glm::dot(normalT, directionnormalizedOut) <= 0)normalT = -normalT;
+		intersectionpointT = intersectionpointT + 0.01f*normalT;
 		intersection = intersectionpointT;
 		shadow = castShadowRay(r, intersectionpointT, T);
-		material = T.getTriangleMaterial(idT);
+		material = T.getTriangleMaterial(idT);	
 		normal = normalT;
 	
 	}
 	else if (idS != -1)
-	{
+	{	
 		sphereHit = true;
 		result = pixelColorS;
 		intersection = intersectionpointS;
@@ -163,18 +174,45 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	else
 	{
 		std::cout << "no HIT" << std::endl;
+		return glm::vec3(0.f, 0.f, 0.f);
 	}
 		
-
-	result = L.getLocalLight(r,intersection, T, idS, idT, normal, sphereHit);
-
+	result = L.getLocalLight(r, intersection, T, idS, idT, normal, sphereHit);
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
 
-	if (shadow)return result*0.1f + 0.05f*returnPixel(r, T, nrbounces - 1);
-	if (!material)return returnPixel(r, T, 1);
-	return 0.5f*(result + 0.1f*returnPixel(r, T,  nrbounces-1));
+	//check if ray hits a lightSource
+	if (material.isLightSource) {
+		//end ray
+		return L.getAreaLightIntensity();
+	}
+	//check if material is a mirror
+	else if (material.isSpecular) {
+		//get reflective pixelvalue
+		//r.setImportance(0.9f*r.getImportance());
+		glm::vec3 pixelColor = r.getImportance()*returnPixel(r, T, 1);
+		
+		return pixelColor;
+	}
+	//check if in shadow
+	else if (shadow) {
+		//send a lower pixel value
+//		std::cout << "first: " << r.getImportance() << std::endl;
+		r.setImportance(0.1f*r.getImportance());
+	//	std::cout << "after: " << r.getImportance() << std::endl;
+		glm::vec3 pixelColor = 0.5f*result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
+		
+		return pixelColor;
+	}
+	//for diffuse surfaces
+	else {
+		//continue
+		r.setImportance(0.2f*r.getImportance());
+		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
+		
+		return pixelColor;
+	}
 }
 
 
@@ -199,10 +237,13 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 	double intersection2sphere_2 = glm::length(interS - intersection);
 	
 
-	if (intersection2triangle_2 < intersection2light_2 || intersection2sphere_2 < intersection2light_2) {
-		return true;
+	if (intersection2triangle_2 <= intersection2light_2 ) {
+		returnState = true;
 	}
-		
+	else if (intersection2sphere_2 <= intersection2light_2) {
+		returnState = true;
+	}
+
 	return returnState;
 }
 
