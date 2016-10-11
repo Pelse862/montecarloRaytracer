@@ -4,8 +4,11 @@
 #include "glm.hpp"
 #include "Direction.h"
 #include "Triangle.h"
+
 #include <iostream>
 #include <vector>
+#include <random>
+
 using std::vector;
 
 //small size for fast rendering
@@ -40,3 +43,4 @@ class Camera
 
 };
 
+inline float getRandomFloat(float deltaDist);

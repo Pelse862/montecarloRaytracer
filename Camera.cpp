@@ -42,7 +42,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	//ray variables
 	glm::vec3 originPoint;
 	glm::vec3 rayDirection;
-
+	glm::vec3 pixelColor = glm::vec3(0.f,0.f,0.f);
 	//perspective values
 	
 	float py;
@@ -62,21 +62,30 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
 			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
 
+				
+
 			//new origin for each pixelvalue from -1 to +1
-			originPoint = glm::vec3(0.0f , -1.0f + (deltaDistY/2) + deltaDistY*n,-1.0f + (deltaDistZ / 2) + deltaDistZ*i);
+			for (int k = 0; k < 4; k++) {
+				originPoint = glm::vec3(0.0f,
+					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2) + deltaDistY*n,
+					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistY / 2) + deltaDistZ*i
+				);
+
+				//raydirection combined with the perspective vec
+				rayDirection = D.calculateRayDirection(originPoint, camera) + glm::vec3(0.0f, py, pz);
+
+				r.setRayDirection(rayDirection);
+				r.setRayOrigin(originPoint);
+				pixelColor += returnPixel(r, T, 2);
+
+			}
 			
-			//raydirection combined with the perspective vec
-			rayDirection = D.calculateRayDirection(originPoint,camera) + glm::vec3(0.0f,  py ,pz);
-
-			r.setRayDirection(rayDirection);
-			r.setRayOrigin(originPoint); 
-			glm::vec3 pixelColor = returnPixel(r, T , 2 );
-
 			
 			image[i][n] = pixelColor;
 			for (int k = 0; k < 2; ++k) {
 				if (largest < image[i][n][k])largest = image[i][n][k];
 			}
+			pixelColor = glm::vec3(0.f, 0.f, 0.f);
 		}
 	}
 	std::cout << largest << ": largest"<<std::endl;
@@ -125,14 +134,13 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 
 	float point2sphere = glm::length(intersectionpointS - r.getRayorigin());
 	float point2triangle = glm::length(intersectionpointT - r.getRayorigin());
-	if (idT == -1)std::cout << "not hit";
 	if (idT != -1 && point2sphere > point2triangle)
 	{
 		result = pixelColorT;
 		normalT = glm::normalize( T.getTriangles().at(idT).normal ) ;
 		directionnormalizedOut = -glm::normalize(r.getDirection());
 
-		if (acos(glm::dot(normalT, directionnormalizedOut)) > M_PI / 2.f)normalT = -normalT;
+		if (glm::dot(normalT, directionnormalizedOut) < 0)normalT = -normalT;
 		
 		intersectionpointT = intersectionpointT + 0.001f*normalT;
 
@@ -157,30 +165,8 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		std::cout << "no HIT" << std::endl;
 	}
 		
-	glm::vec3 pl = L.getLightPosition() - intersection;
-	glm::vec3 V = r.getDirection();
 
-		
-
-	pl = glm::normalize(pl);
-	glm::vec3 N = glm::normalize(normal);
-
-
-	//specular
-	glm::vec3 R = 2 * glm::dot(N, pl)*N- pl;
-
-	if (!sphereHit && idT != -1) {
-		result += glm::dot(pl, N)*L.getlightIntensity()*T.getTriangles().at(idT).color ;
-	}
-	else if(sphereHit && idS != -1){
-		result += glm::dot(pl, N)*L.getlightIntensity()*T.getSpheres().at(idS).color+ glm::pow(glm::dot(R, V), 1.2f)*L.getlightIntensity()*T.getSpheres().at(idS).color;
-	}
-	else
-
-	{	//if nothing is hit failsafe
-		result = glm::vec3(0.f, 0.f, 0.f);
-	}
-
+	result = L.getLocalLight(r,intersection, T, idS, idT, normal, sphereHit);
 
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
@@ -217,9 +203,6 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 		return true;
 	}
 		
-	
-
-	
 	return returnState;
 }
 
@@ -227,5 +210,12 @@ bool Camera::castShadowRay(Ray & r, glm::vec3 intersection, Triangle T)
 Camera::~Camera()
 {
 	std::cout << "camera ended : ";
+}
+
+inline float getRandomFloat(float deltadist)
+{
+	std::random_device generator;
+	std::uniform_real_distribution<float> distance(-deltadist, deltadist);
+	return distance(generator);
 }
 

@@ -283,9 +283,9 @@ void Triangle::setBox(std::vector<glm::vec3>  & room) {
 
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2; i = i + 3) {
 
-		V.x = vertex_array_data[i]+0.75f;
+		V.x = vertex_array_data[i]+1.75f;
 		V.y = vertex_array_data[i + 1] ;
-		V.z = vertex_array_data[i + 2] -0.5f;
+		V.z = vertex_array_data[i + 2] -1.25f;
 
 		room.push_back(V);
 
@@ -317,8 +317,8 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 	std::cout << "triangles: " << triangles.size() << std::endl;
 	
 	//floor room
-	triangles.at(0).color = glm::vec3(0.f, 0.f, 0.f);
-	triangles.at(0).mat.isSpecular = true;
+	triangles.at(0).color = glm::vec3(255.f, 255.f, 255.f);
+	triangles.at(0).mat.isDiffuse = true;
 	triangles.at(1).color = glm::vec3(255.f, 255.f, 255.f);
 	triangles.at(1).mat.isDiffuse = true;
 
@@ -338,9 +338,9 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 	//Right back Red
 	triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(6).mat.isDiffuse = true;
+	triangles.at(6).mat.isDiffuse = false;
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(7).mat.isDiffuse = true;
+	triangles.at(7).mat.isDiffuse = false;
 
 	//Right front Blue
 	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
@@ -431,8 +431,8 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	sphere s1,s2;
 	s1.center = glm::vec3(6.0f, -2.0f, 2.0f);
 	s1.radius = 1.0f;
-	s1.color = glm::vec3(0.0f, 0.0f, 0.0f);
-	s1.mat.isDiffuse = false;
+	s1.color = glm::vec3(100.0f, 100.0f, 100.0f);
+	s1.mat.isDiffuse = true;
 	S.push_back(s1);
 
 	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);
