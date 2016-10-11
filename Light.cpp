@@ -4,7 +4,7 @@
 Light::Light()
 {
 	position = glm::vec3(7.f, 2.f, -2.f);
-	lightIntenisity = glm::vec3(0.f,0.f,0.f);
+	lightIntenisity = glm::vec3(100.f,000.f,100.f);
 	areaLightIntensity = glm::vec3(100.f, 150.f, 128.f);
 }
 
