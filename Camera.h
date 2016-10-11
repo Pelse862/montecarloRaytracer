@@ -15,14 +15,14 @@
 using std::vector;
 
 //small size for fast rendering
-const int imageSizeY = 800;
-const int imageSizeZ = 600;
+const int imageSizeY = 400;
+const int imageSizeZ = 200;
 
 class Camera
 {		
 	friend class Camera;
 	public:
-		
+		int bounceDepth = 2;
 		Camera();
 
 		//different position is used depending on user input
@@ -31,7 +31,7 @@ class Camera
 		int checkTriangleandSphereHits(int camera);
 		
 		//calculate pixelvalues 
-		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces);
+		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces, Light L);
 		
 		//return random point on triangle
 
@@ -50,5 +50,4 @@ class Camera
 
 inline float getRandomFloat(float deltaDist);
 inline void pointLight(bool &returnState, Light L, Triangle T, glm::vec3 intersection);
-inline void areaLightpoints(Triangle t, float & contribution, glm::vec3 intersection, bool &returnState);
-inline void Barycentric(Triangle::tri t, glm::vec3 & point);
+inline void areaLightpoints(Triangle t, float & contribution, glm::vec3 intersection, bool &returnState, Light L);

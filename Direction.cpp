@@ -12,7 +12,6 @@ glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos, int camera) {
 	return endPos - Camera::getCameraPosition2();
 }
 
-//this should be perfect reflection model, it is wrong but easy to implement
 glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::material mat) {
 	glm::vec3 directionIn;
 	glm::vec3 v1,v2,axis;
@@ -24,6 +23,7 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::materia
 	{
 		v1 = -directionIn - glm::dot(-directionIn, normal)*normal;
 		axis = v2 = v1 = -v1;
+
 		//inclination calculation
 		v1 = v1 * cos(randomValInc) + glm::cross(axis, v1)*sin(randomValInc) + 
 			 axis*(axis*v1)*(1 - cos(randomValInc));

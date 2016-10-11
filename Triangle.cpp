@@ -451,7 +451,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);
 	s2.radius = 0.5f;
 	s2.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s2.mat.isDiffuse = true;
+	s2.mat.isSpecular = true;
 	S.push_back(s2);
 
 }

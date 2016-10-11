@@ -37,8 +37,10 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	
 	//classobjects needed
 	Direction D;// = new Direction();
-
+	Light L;
+	
 	Triangle T;// = new Triangle();
+	L.setAreaLightPoints(T);
 	float persenc = 0;
 	Ray r;
 	//ray variables
@@ -80,8 +82,8 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 				r.setRayDirection(rayDirection);
 				r.setRayOrigin(originPoint);
-
-				pixelColor += returnPixel(r, T, 5);
+				r.setImportance(1.0f);
+				pixelColor += returnPixel(r, T, bounceDepth, L);
 
 			}
 			
@@ -121,11 +123,10 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 
 
-glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
+glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	//std::cout << "bounce : " << nrbounces << '\n';
 	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
 	Direction D;
-	Light L;
 	Triangle::material material;
 	int idT = -1, idS = -1;
 	float lightFromAreaLight = 0.f;
@@ -153,7 +154,6 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	float point2triangle = glm::length(intersectionpointT - r.getRayorigin());
 	if (point2sphere > point2triangle)
 	{
-		result = pixelColorT;
 		normalT = glm::normalize( T.getTriangles().at(idT).normal ) ;
 		directionnormalizedOut = -glm::normalize(r.getDirection());
 		if (glm::dot(normalT, directionnormalizedOut) <= 0)normalT = -normalT;
@@ -167,7 +167,6 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	else if (idS != -1)
 	{	
 		sphereHit = true;
-		result = pixelColorS;
 		intersection = intersectionpointS;
 		shadow = castShadowRay(r, lightFromAreaLight, intersectionpointS, T, L );
 		material = T.getSphereMaterial(idS);
@@ -179,9 +178,9 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		//std::cout << "no HIT" << std::endl;
 		return glm::vec3(0.f, 0.f, 0.f);
 	}
-		
-	result = L.getLocalLight(r, intersection, T, idS, idT, normal, sphereHit);
-	
+	if(!shadow)result = L.getLocalLightPoint(r, intersection, T, idS, idT, normal, sphereHit);
+	if(!shadow)result += L.getLocalLightArea(lightFromAreaLight, r, intersection, T, idS, idT, normal, sphereHit);
+
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
@@ -189,29 +188,21 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//check if ray hits a lightSource
 	if (material.isLightSource) {
 		//end ray
-		return L.getAreaLightIntensity()*1000.f;
+		return L.getAreaLightIntensity()*100.f;
 	}
 	//check if material is a mirror
 	else if (material.isSpecular) {
 		//get reflective pixelvalue
-		r.setImportance(1.0f*r.getImportance());
-		glm::vec3 pixelColor = r.getImportance()*returnPixel(r, T, 1);
+		r.setImportance(1.0f);
+		glm::vec3 pixelColor = r.getImportance()*returnPixel(r, T, 1, L );
 		
 		return pixelColor;
 	}
-	//check if in shadow
-	else if (shadow) {
-		//send a lower pixel value
-		r.setImportance(0.1f*r.getImportance());
-		glm::vec3 pixelColor = 0.5f*result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
-		
-		return pixelColor;
-	}
-	//for diffuse surfaces
+
 	else {
 		//continue
-		r.setImportance(0.3f*r.getImportance());
-		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1);
+		r.setImportance(0.8f*r.getImportance());
+		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1, L);
 		
 		return pixelColor;
 	}
@@ -222,9 +213,7 @@ bool Camera::castShadowRay(Ray & r,float & lightFromAreaLight, glm::vec3 interse
 {
 	bool returnStatepointLight = false;
 	pointLight(returnStatepointLight, L,  T, intersection);
-	areaLightpoints(T, lightFromAreaLight, intersection ,returnStatepointLight);
-
-
+	areaLightpoints(T, lightFromAreaLight, intersection ,returnStatepointLight, L);
 	return returnStatepointLight;
 }
 //check if point is in shadow for the pointlight
@@ -233,12 +222,11 @@ inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersec
 	int idS = -1.f, idT = -1.f;
 	Ray shadowRay;
 	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
-	shadowRay.setHitS(false);
-	shadowRay.setHitT(false);
 	shadowRay.setRayOrigin(intersection);
 	shadowRay.setRayDirection(glm::normalize(L.getLightPosition() - intersection));
 	T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
 	T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), idS);
+	
 	float inter2light = glm::length(L.getLightPosition() - intersection);
 	float inter2tri = glm::length(interT - intersection);
 	float inter2sph = glm::length(interS - intersection);
@@ -249,26 +237,11 @@ inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersec
 	else if (inter2sph <= inter2light) {
 		returnState = true;
 	}
+
 }
-inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersection, bool & returnState)
+inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersection, bool & returnState, Light L)
 {
-	std::vector<glm::vec3> points;
-	glm::vec3 p;
-	Triangle::tri t1 = T.getTriangles().at(T.getTriangles().size() - 1);
-	Triangle::tri t2 = T.getTriangles().at(T.getTriangles().size() - 2);
-	glm::vec3 normal = glm::normalize(t1.normal);
-	for (int i = 0; i < 3; i++) {
-		Barycentric(t1, p);
-		p += 0.0001f*normal;
-		points.push_back(p);
-	}
-	normal = glm::normalize(t2.normal);
-	for (int i = 0; i < 3; i++) {
-		Barycentric(t2, p);
-		p += 0.0001f*-normal;
-		//std::cout << p.x << " " << p.y << " " << p.z << std::endl;
-		points.push_back(p);
-	}
+	
 	//calculate interectiona and contribution
 	Ray shadowRay;
 	int idS = -1.f, idT = -1.f;
@@ -277,7 +250,8 @@ inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersect
 	float inter2light;
 	float inter2tri;
 	float inter2sph;
-	for (auto & point : points)
+	std::vector<glm::vec3> vec = L.getAreaLightPoints();
+	for (auto & point : vec)
 	{
 		shadowRay.setRayDirection(glm::normalize(point - intersection));
 		T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
@@ -286,7 +260,7 @@ inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersect
 		inter2tri = glm::length(interT - intersection);
 		inter2sph = glm::length(interS - intersection);
 		if (inter2tri > inter2light && inter2sph > inter2light) {
-			contribution += 1.f/ points.size();
+			contribution += 1.f/ vec.size();
 		}
 		else if (inter2tri <= inter2light) {
 			returnState = true;
@@ -297,19 +271,6 @@ inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersect
 	}
 	//std::cout << contribution << std::endl;
 	
-}
-//according to cramers rule (I think)
-inline void Barycentric(Triangle::tri t, glm::vec3 & point)
-{
-	float r1 = getRandomFloat(1.f);
-	float r2 = getRandomFloat(1.f);
-	float ax = t.vert[0].x, bx = t.vert[1].x, cx = t.vert[2].x;
-	float ay = t.vert[0].y, by = t.vert[1].y, cy = t.vert[2].y;
-	float az = t.vert[0].z, bz = t.vert[1].z, cz = t.vert[2].z;
-
-	point.x = (1 - sqrt(r1)) * ax + (sqrt(r1) * (1 - r2)) * bx + (sqrt(r1) * r2) * cx;
-	point.y = (1 - sqrt(r1)) * ay + (sqrt(r1) * (1 - r2)) * by + (sqrt(r1) * r2) * cy;
-	point.z = (1 - sqrt(r1)) * az + (sqrt(r1) * (1 - r2)) * bz + (sqrt(r1) * r2) * cz;
 }
 
 
