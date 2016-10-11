@@ -71,8 +71,8 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			//new origin for each pixelvalue from -1 to +1
 			for (int k = 0; k < 4; k++) {
 				originPoint = glm::vec3(0.0f,
-					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY ) + deltaDistY*n,
-					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ ) + deltaDistZ*i
+					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY / 2.f ) + deltaDistY*n,
+					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ / 2.f ) + deltaDistZ*i
 				);
 
 				//raydirection combined with the perspective vec
@@ -178,11 +178,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 		return glm::vec3(0.f, 0.f, 0.f);
 	}
 		
-	
-
-	result = L.getLocalLight(r,intersection, T, idS, idT, normal, sphereHit);
-
-
+	result = L.getLocalLight(r, intersection, T, idS, idT, normal, sphereHit);
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
@@ -200,12 +196,12 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces) {
 	//check if in shadow
 	else if (shadow) {
 		//send a lower pixel value
-		return result*0.1f + 0.05f*returnPixel(r, T, nrbounces - 1);
+		return 0.5f*result + 0.075f*returnPixel(r, T, nrbounces - 1);
 	}
 	//for diffuse surfaces
 	else {
 		//continue
-		return 0.5f*(result + 0.2f*returnPixel(r, T, nrbounces - 1));
+		return result + 0.15f*returnPixel(r, T, nrbounces - 1);
 	}
 }
 
