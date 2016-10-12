@@ -71,7 +71,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 				
 
 			//new origin for each pixelvalue from -1 to +1
-			for (int k = 0; k < 4; k++) {
+			for (int k = 0; k < samplePerRay; k++) {
 				originPoint = glm::vec3(0.0f,
 					-1.0f + (deltaDistY / 2) + getRandomFloat( deltaDistY ) - deltaDistY/2.f + deltaDistY*n,
 					-1.0f + (deltaDistZ / 2) + getRandomFloat( deltaDistZ ) - deltaDistZ/2.f + deltaDistZ*i
@@ -88,7 +88,7 @@ int Camera::checkTriangleandSphereHits(int camera) {
 			}
 			
 			
-			image[i][n] = pixelColor/4.f;
+			image[i][n] = pixelColor;
 			//get largest value for each channel separatly
 			/*
 			largestR = (largestR < image[i][n][0]) ?  image[i][n][0] : largestR;
@@ -133,6 +133,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	r.setHitS(false);
 	r.setHitT(false);
 	bool shadow = false;;
+	bool areaLightShadow = false;
 	glm::vec3 normal = glm::vec3(0.f, 0.f, 0.f); 
 	glm::vec3 normalT = glm::vec3(0.f, 0.f, 0.f);
 	glm::vec3 normalS = glm::vec3(0.f, 0.f, 0.f);
@@ -159,7 +160,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 		if (glm::dot(normalT, directionnormalizedOut) <= 0)normalT = -normalT;
 		intersectionpointT = intersectionpointT + 0.01f*normalT;
 		intersection = intersectionpointT;
-		shadow = castShadowRay(r, lightFromAreaLight, intersectionpointT, T, L);
+		castShadowRay(shadow, areaLightShadow, lightFromAreaLight, intersectionpointT, T, L);
 		material = T.getTriangleMaterial(idT);	
 		normal = normalT;
 	
@@ -168,7 +169,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	{	
 		sphereHit = true;
 		intersection = intersectionpointS;
-		shadow = castShadowRay(r, lightFromAreaLight, intersectionpointS, T, L );
+		castShadowRay(shadow, areaLightShadow,  lightFromAreaLight, intersectionpointS, T, L );
 		material = T.getSphereMaterial(idS);
 		normal = normalS;
 	
@@ -179,7 +180,7 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 		return glm::vec3(0.f, 0.f, 0.f);
 	}
 	if(!shadow)result = L.getLocalLightPoint(r, intersection, T, idS, idT, normal, sphereHit);
-	if(!shadow)result += L.getLocalLightArea(lightFromAreaLight, r, intersection, T, idS, idT, normal, sphereHit);
+	result += L.getLocalLightArea(lightFromAreaLight, r, intersection, T, idS, idT, normal, sphereHit);
 
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
@@ -188,14 +189,13 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	//check if ray hits a lightSource
 	if (material.isLightSource) {
 		//end ray
-		return L.getAreaLightIntensity()*100.f;
+		return L.getAreaLightIntensity();
 	}
 	//check if material is a mirror
 	else if (material.isSpecular) {
 		//get reflective pixelvalue
 		r.setImportance(1.0f);
 		glm::vec3 pixelColor = r.getImportance()*returnPixel(r, T, 1, L );
-		
 		return pixelColor;
 	}
 
@@ -203,18 +203,50 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 		//continue
 		r.setImportance(0.8f*r.getImportance());
 		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1, L);
-		
 		return pixelColor;
 	}
 }
 
 
-bool Camera::castShadowRay(Ray & r,float & lightFromAreaLight, glm::vec3 intersection, Triangle T, Light L)
+bool Camera::castShadowRay(bool & shadow, bool &areaLightShadow,float & lightFromAreaLight, glm::vec3 intersection, Triangle T, Light L)
 {
 	bool returnStatepointLight = false;
-	pointLight(returnStatepointLight, L,  T, intersection);
-	areaLightpoints(T, lightFromAreaLight, intersection ,returnStatepointLight, L);
+	pointLight(shadow, L,  T, intersection);
+	areaLightpoints(T, lightFromAreaLight, intersection ,areaLightShadow, L);
 	return returnStatepointLight;
+}
+inline void areaLightpoints(Triangle T, float & contribution, glm::vec3 intersection, bool & areaLightShadow, Light L)
+{
+
+	//calculate interectiona and contribution
+	Ray shadowRay;
+	int idS = -1.f, idT = -1.f;
+	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
+	shadowRay.setRayOrigin(intersection);
+	float inter2light;
+	float inter2tri;
+	float inter2sph;
+	std::vector<glm::vec3> vec = L.getAreaLightPoints();
+	for (auto & point : vec)
+	{
+		shadowRay.setRayDirection(glm::normalize(point - intersection));
+		T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
+		T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), idS);
+		inter2light = glm::length(point - intersection);
+		inter2tri = glm::length(interT - intersection);
+		inter2sph = glm::length(interS - intersection);
+		if (inter2tri > inter2light && inter2sph > inter2light) {
+			contribution += 1.f / vec.size();
+		}
+		else if (inter2tri <= inter2light) {
+			areaLightShadow = true;
+		}
+		else if (inter2sph <= inter2light) {
+			areaLightShadow = true;
+		}
+	}
+	//std::cout << contribution << std::endl;
+
 }
 //check if point is in shadow for the pointlight
 inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersection)
@@ -239,39 +271,7 @@ inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersec
 	}
 
 }
-inline void areaLightpoints(Triangle T, float & contribution,glm::vec3 intersection, bool & returnState, Light L)
-{
-	
-	//calculate interectiona and contribution
-	Ray shadowRay;
-	int idS = -1.f, idT = -1.f;
-	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
-	shadowRay.setRayOrigin(intersection);
-	float inter2light;
-	float inter2tri;
-	float inter2sph;
-	std::vector<glm::vec3> vec = L.getAreaLightPoints();
-	for (auto & point : vec)
-	{
-		shadowRay.setRayDirection(glm::normalize(point - intersection));
-		T.molllerTrombore(T.getTriangles(), shadowRay, interT, glm::vec3(0.f, 0.f, 0.f), idT);
-		T.sphereIntersect(T.getSpheres(), shadowRay, interS, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), idS);
-		inter2light = glm::length(point - intersection);
-		inter2tri = glm::length(interT - intersection);
-		inter2sph = glm::length(interS - intersection);
-		if (inter2tri > inter2light && inter2sph > inter2light) {
-			contribution += 1.f/ vec.size();
-		}
-		else if (inter2tri <= inter2light) {
-			returnState = true;
-		}
-		else if (inter2sph <= inter2light) {
-			returnState = true;
-		}
-	}
-	//std::cout << contribution << std::endl;
-	
-}
+
 
 
 Camera::~Camera()

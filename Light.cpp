@@ -66,13 +66,13 @@ void Light::setAreaLightPoints(Triangle T) {
 	glm::vec3 normal = glm::normalize(t1.normal);
 	for (int i = 0; i < 6; i++) {
 		Barycentric(t1, p);
-		p += 0.0001f*normal;
+		p += 0.001f*normal;
 		AreaLightPoints.push_back(p);
 	}
 	normal = glm::normalize(t2.normal);
 	for (int i = 0; i < 6; i++) {
 		Barycentric(t2, p);
-		p += 0.0001f*-normal;
+		p += 0.001f*-normal;
 		//std::cout << p.x << " " << p.y << " " << p.z << std::endl;
 		AreaLightPoints.push_back(p);
 	}

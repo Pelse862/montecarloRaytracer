@@ -18,11 +18,13 @@ using std::vector;
 const int imageSizeY = 400;
 const int imageSizeZ = 200;
 
+#define samplePerRay 100
+#define bounceDepth 10
+
 class Camera
 {		
 	friend class Camera;
 	public:
-		int bounceDepth = 2;
 		Camera();
 
 		//different position is used depending on user input
@@ -37,7 +39,7 @@ class Camera
 
 		//creates an image and saves it into ppm format.
 		void createImage();
-		bool castShadowRay(Ray & r, float & nrPointArea, glm::vec3 intersection, Triangle T, Light L);
+		bool castShadowRay(bool & shadow, bool &areaLightShadow, float & nrPointArea, glm::vec3 intersection, Triangle T, Light L);
 		~Camera();
 			
 	private:
