@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Pixel.h"
+
 #include "glm.hpp"
 #include "Direction.h"
 #include "Triangle.h"

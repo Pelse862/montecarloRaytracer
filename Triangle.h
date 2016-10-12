@@ -1,8 +1,7 @@
 #pragma once
 
 
-#include "Vertex.h"
-#include "ColorDbl.h"
+
 #include "Ray.h"
 #include "glm.hpp"
 
@@ -60,7 +59,7 @@ class Triangle
 		std::vector<glm::vec3> roomVertices;
 		std::vector<tri> triangles;
 		std::vector<sphere> spheres;
-		ColorDbl color;
+
 
 };
 
