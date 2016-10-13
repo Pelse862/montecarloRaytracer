@@ -23,7 +23,6 @@ Triangle::Triangle()
 	
 }
 //calculates if the ray is on the surface of the sphere
-//using the formula ||x-c|^2| = r^2 
 void Triangle::sphereIntersect(std::vector<sphere> & spheres, Ray & r, glm::vec3 & intersectionPoint ,glm::vec3 & pixelcolor,
 	glm::vec3 & normalS, int & id){
 
@@ -148,7 +147,7 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 	}
 
 }
-
+//area light triangles
 void Triangle::setAreaLight(std::vector<glm::vec3>  & room) {
 	float vertex_array_data[] = {
 		6.f, -0.5f,-4.99f,
@@ -161,16 +160,11 @@ void Triangle::setAreaLight(std::vector<glm::vec3>  & room) {
 
 	};
 	glm::vec3 V;
-	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
-
 	for (int i = 0; i < (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2; i = i + 3) {
-
 		V.x = vertex_array_data[i];
 		V.y = vertex_array_data[i + 1];
 		V.z = vertex_array_data[i + 2];
-
 		room.push_back(V);
-
 	}
 }
 
@@ -261,10 +255,6 @@ void Triangle::setRoom(std::vector<glm::vec3>  & room) {
 		10.0f,  -6.0f, 5.0f,    // Roof right
 		13.0f,  0.0f, 5.0f,   // 
 		10.f,  6.0f, 5.0f,    // 	
-
-		
-	
-
 	};
 	glm::vec3 V;
 	//std::cout << (sizeof(vertex_array_data) / sizeof *vertex_array_data) - 2 << "nr verts" << '\n';
@@ -362,9 +352,9 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 
 	//Right back Red
 	triangles.at(6).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(6).mat.isSpecular = true;
+	triangles.at(6).mat.isDiffuse = true;
 	triangles.at(7).color = glm::vec3(255.f,0.f,0.f);
-	triangles.at(7).mat.isSpecular = true;
+	triangles.at(7).mat.isDiffuse = true;
 
 	//Right front Blue
 	triangles.at(8).color = glm::vec3(0.f, 0.f, 255.f);
@@ -449,9 +439,9 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	S.push_back(s1);
 
 	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);
-	s2.radius = 0.5f;
+	s2.radius = 0.8f;
 	s2.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s2.mat.isSpecular = true;
+	s2.mat.isDiffuse = true;
 	S.push_back(s2);
 
 }

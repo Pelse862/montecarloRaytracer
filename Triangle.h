@@ -10,6 +10,7 @@
 class Triangle
 {
 	public:
+		//available materials
 		struct material {
 			bool isDiffuse = false;
 			bool isSpecular = false;

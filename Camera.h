@@ -18,7 +18,7 @@ using std::vector;
 const int imageSizeY = 400;
 const int imageSizeZ = 200;
 
-#define samplePerRay 100
+#define samplePerRay 300
 #define bounceDepth 10
 
 class Camera
@@ -30,19 +30,18 @@ class Camera
 		//different position is used depending on user input
 		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
+		//main rendering loop
 		int checkTriangleandSphereHits(int camera);
 		
 		//calculate pixelvalues 
 		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces, Light L);
 		
-		//return random point on triangle
-
 		//creates an image and saves it into ppm format.
 		void createImage();
 		bool castShadowRay(bool & shadow, bool &areaLightShadow, float & nrPointArea, glm::vec3 intersection, Triangle T, Light L);
 		~Camera();
 			
-	private:
+		private:
 		float deltaDistY = 2.0f / imageSizeY;
 		float deltaDistZ = 2.0f / imageSizeZ;
 		vector<vector<glm::vec3> > image =

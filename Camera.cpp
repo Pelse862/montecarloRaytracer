@@ -34,47 +34,41 @@ void Camera::createImage() {
 
 //check if the ray from the image plane hits a triangle.
 int Camera::checkTriangleandSphereHits(int camera) {
-	
+
 	//classobjects needed
-	Direction D;// = new Direction();
+	Direction D;
 	Light L;
-	
-	Triangle T;// = new Triangle();
-	L.setAreaLightPoints(T);
-	float persenc = 0;
 	Ray r;
+	Triangle T;
+	L.setAreaLightPoints(T);
+
 	//ray variables
 	glm::vec3 originPoint;
 	glm::vec3 rayDirection;
-	glm::vec3 pixelColor = glm::vec3(0.f,0.f,0.f);
-	//perspective values
-	
+	glm::vec3 pixelColor = glm::vec3(0.f, 0.f, 0.f);
+
 	float py;
 	float pz;
-	//Y>Z
 	float fovZ = M_PI / 4;
 	float fovY = fovZ* float(imageSizeZ) / float(imageSizeY);
 	float tanZ = tan(fovZ / 2);
 	float tanY = tan(fovY / 2);
-	int id = -1;
-	float largestR = 0;
-	float largestG = 0;
-	float largestB = 0;
+	float largest = 0;
 
-	for (float i = 0; i < imageSizeZ; ++i) {	
+	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
 
 			//calculate perspective y and z.            
 			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
 			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
 
-				
+
 
 			//new origin for each pixelvalue from -1 to +1
 			for (int k = 0; k < samplePerRay; k++) {
 				originPoint = glm::vec3(0.0f,
-					-1.0f + (deltaDistY / 2) + getRandomFloat( deltaDistY ) - deltaDistY/2.f + deltaDistY*n,
-					-1.0f + (deltaDistZ / 2) + getRandomFloat( deltaDistZ ) - deltaDistZ/2.f + deltaDistZ*i
+					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY) - deltaDistY / 2.f + deltaDistY*n,
+					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ) - deltaDistZ / 2.f + deltaDistZ*i
 				);
 
 				//raydirection combined with the perspective vec
@@ -86,46 +80,38 @@ int Camera::checkTriangleandSphereHits(int camera) {
 				pixelColor += returnPixel(r, T, bounceDepth, L);
 
 			}
-			
-			
+
+
 			image[i][n] = pixelColor;
-			//get largest value for each channel separatly
-			/*
-			largestR = (largestR < image[i][n][0]) ?  image[i][n][0] : largestR;
-			largestG = (largestG < image[i][n][1]) ?  image[i][n][1] : largestG;
-			largestB = (largestB < image[i][n][2]) ?  image[i][n][2] : largestB;
-			*/
+	
+			
 			for (int k = 0; k < 2; ++k) {
-				if (largestR < image[i][n][k])largestR = image[i][n][k];
+				if (largest < image[i][n][k])largest = image[i][n][k];
 			}
 			pixelColor = glm::vec3(0.f, 0.f, 0.f);
 		}
-		persenc += 100.f / imageSizeZ;
-
-		std::cout << "\rpercent done of image rendering : "<< persenc << " %";
 	}
-	//std::cout << largestR << ": largest Red"<<std::endl;
-	//std::cout << largestG << ": largest Green" << std::endl;
-	//std::cout << largestB << ": largest Blue" << std::endl;
+
 
 	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
-			image[i][n] = 255.f*sqrt(image[i][n] / largestR);
+			image[i][n] = 255.f*sqrt(image[i][n] / largest);
 		}
 	}
 
 	//create image 
 	createImage();
-	
+
 	//end rendering this image
 	return 0;
 }
 
-
-
 glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	//std::cout << "bounce : " << nrbounces << '\n';
-	if (nrbounces == 0)return glm::vec3(0.f, 0.f, 0.f);
+	float randomNr = getRandomFloat(1.f);
+
+	if (nrbounces == 0 || randomNr>r.getImportance())return glm::vec3(0.f, 0.f, 0.f);
+	
 	Direction D;
 	Triangle::material material;
 	int idT = -1, idS = -1;
@@ -176,10 +162,12 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	}
 	else
 	{
-		//std::cout << "no HIT" << std::endl;
+		//end ray, (failsafe)
 		return glm::vec3(0.f, 0.f, 0.f);
 	}
-	if(!shadow)result = L.getLocalLightPoint(r, intersection, T, idS, idT, normal, sphereHit);
+	//pointlight
+	//if(!shadow)result = L.getLocalLightPoint(r, intersection, T, idS, idT, normal, sphereHit);
+	//AreaLight
 	result += L.getLocalLightArea(lightFromAreaLight, r, intersection, T, idS, idT, normal, sphereHit);
 
 	//calculate new ray from intersectionpoint
@@ -188,8 +176,9 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 
 	//check if ray hits a lightSource
 	if (material.isLightSource) {
-		//end ray
-		return L.getAreaLightIntensity();
+		r.setImportance(1.0f);
+		glm::vec3 pixelColor = nrbounces* r.getImportance()*L.getAreaLightIntensity();
+		return pixelColor;
 	}
 	//check if material is a mirror
 	else if (material.isSpecular) {
@@ -198,27 +187,27 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 		glm::vec3 pixelColor = r.getImportance()*returnPixel(r, T, 1, L );
 		return pixelColor;
 	}
-
+	//if surface is diffuse
 	else {
-		//continue
 		r.setImportance(0.8f*r.getImportance());
 		glm::vec3 pixelColor = result + r.getImportance()*returnPixel(r, T, nrbounces - 1, L);
 		return pixelColor;
 	}
 }
 
-
 bool Camera::castShadowRay(bool & shadow, bool &areaLightShadow,float & lightFromAreaLight, glm::vec3 intersection, Triangle T, Light L)
 {
+	//returnsate for pointlight
 	bool returnStatepointLight = false;
-	pointLight(shadow, L,  T, intersection);
+	//pointLight(shadow, L,  T, intersection);
 	areaLightpoints(T, lightFromAreaLight, intersection ,areaLightShadow, L);
 	return returnStatepointLight;
 }
+
+//calculate if shadow and percentage of light applied
 inline void areaLightpoints(Triangle T, float & contribution, glm::vec3 intersection, bool & areaLightShadow, Light L)
 {
-
-	//calculate interectiona and contribution
+	//calculate intersection and contribution
 	Ray shadowRay;
 	int idS = -1.f, idT = -1.f;
 	glm::vec3 interS = glm::vec3(0.f, 0.f, 0.f), interT = glm::vec3(0.f, 0.f, 0.f);
@@ -245,9 +234,8 @@ inline void areaLightpoints(Triangle T, float & contribution, glm::vec3 intersec
 			areaLightShadow = true;
 		}
 	}
-	//std::cout << contribution << std::endl;
-
 }
+
 //check if point is in shadow for the pointlight
 inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersection)
 {
@@ -271,8 +259,6 @@ inline void pointLight(bool &returnState, Light L, Triangle T,glm::vec3 intersec
 	}
 
 }
-
-
 
 Camera::~Camera()
 {
