@@ -150,13 +150,13 @@ void Triangle::molllerTrombore(std::vector<tri> triangles, Ray & r, glm::vec3 & 
 //area light triangles
 void Triangle::setAreaLight(std::vector<glm::vec3>  & room) {
 	float vertex_array_data[] = {
-		6.f, -0.5f,-4.99f,
-		5.f, 0.5f,-4.99f,
-		6.f, 0.5f,-4.99f,
+		6.f, -0.5f,4.99f,
+		5.f, 0.5f, 4.99f,
+		6.f, 0.5f, 4.99f,
 
-		5.f, -0.5f,-4.99f,
-		6.f, -0.5f,-4.99f,
-		5.f, 0.5f,-4.99f
+		5.f, -0.5f, 4.99f,
+		6.f, -0.5f, 4.99f,
+		5.f, 0.5f, 4.99f
 
 	};
 	glm::vec3 V;
@@ -438,7 +438,7 @@ void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	s1.mat.isSpecular = true;
 	S.push_back(s1);
 
-	s2.center = glm::vec3(6.0f, 2.0f, -3.0f);
+	s2.center = glm::vec3(11.0f, 0.0f, -0.0f);
 	s2.radius = 0.8f;
 	s2.color = glm::vec3(100.0f, 100.0f, 100.0f);
 	s2.mat.isDiffuse = true;

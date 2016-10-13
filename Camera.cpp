@@ -57,34 +57,23 @@ int Camera::checkTriangleandSphereHits(int camera) {
 
 	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
-
 			//calculate perspective y and z.            
 			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
 			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
-
-
-
 			//new origin for each pixelvalue from -1 to +1
 			for (int k = 0; k < samplePerRay; k++) {
 				originPoint = glm::vec3(0.0f,
 					-1.0f + (deltaDistY / 2) + getRandomFloat(deltaDistY) - deltaDistY / 2.f + deltaDistY*n,
 					-1.0f + (deltaDistZ / 2) + getRandomFloat(deltaDistZ) - deltaDistZ / 2.f + deltaDistZ*i
 				);
-
 				//raydirection combined with the perspective vec
 				rayDirection = D.calculateRayDirection(originPoint, camera) + glm::vec3(0.0f, py, pz);
-
 				r.setRayDirection(rayDirection);
 				r.setRayOrigin(originPoint);
 				r.setImportance(1.0f);
 				pixelColor += returnPixel(r, T, bounceDepth, L);
-
 			}
-
-
 			image[i][n] = pixelColor;
-	
-			
 			for (int k = 0; k < 2; ++k) {
 				if (largest < image[i][n][k])largest = image[i][n][k];
 			}
@@ -96,6 +85,20 @@ int Camera::checkTriangleandSphereHits(int camera) {
 	for (float i = 0; i < imageSizeZ; ++i) {
 		for (float n = 0; n < imageSizeY; ++n) {
 			image[i][n] = 255.f*sqrt(image[i][n] / largest);
+			py = tanZ * (2 * n - imageSizeY) / float(imageSizeY);
+			pz = tanY * (imageSizeZ - 2 * i) / float(imageSizeZ);
+			pixelColor = glm::vec3(0.f, 0.f, 0.f);
+			originPoint = glm::vec3(0.0f,
+				-1.0f + (deltaDistY / 2) + deltaDistY*n,
+				-1.0f + (deltaDistZ / 2) + deltaDistZ*i
+			);
+			//raydirection combined with the perspective vec
+			rayDirection = D.calculateRayDirection(originPoint, camera) + glm::vec3(0.0f, py, pz);
+			r.setRayDirection(rayDirection);
+			r.setRayOrigin(originPoint);
+			int id = -1;
+			T.molllerTrombore(T.getTriangles(), r, glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 0.f, 0.f), id);
+			if (T.getTriangles().at(id).mat.isLightSource)image[i][n] = L.getAreaLightIntensity();
 		}
 	}
 
@@ -158,7 +161,6 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 		castShadowRay(shadow, areaLightShadow,  lightFromAreaLight, intersectionpointS, T, L );
 		material = T.getSphereMaterial(idS);
 		normal = normalS;
-	
 	}
 	else
 	{
@@ -169,16 +171,12 @@ glm::vec3 Camera::returnPixel(Ray r, Triangle T, int nrbounces, Light L) {
 	//if(!shadow)result = L.getLocalLightPoint(r, intersection, T, idS, idT, normal, sphereHit);
 	//AreaLight
 	result += L.getLocalLightArea(lightFromAreaLight, r, intersection, T, idS, idT, normal, sphereHit);
-
 	//calculate new ray from intersectionpoint
 	r.setRayDirection( D.calculateBounce(r, normal, material) );
 	r.setRayOrigin(intersection);
-
 	//check if ray hits a lightSource
 	if (material.isLightSource) {
-		r.setImportance(1.0f);
-		glm::vec3 pixelColor = nrbounces* r.getImportance()*L.getAreaLightIntensity();
-		return pixelColor;
+		return L.getAreaLightIntensity();
 	}
 	//check if material is a mirror
 	else if (material.isSpecular) {
