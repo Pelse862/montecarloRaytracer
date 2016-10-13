@@ -46,14 +46,13 @@ glm::vec3 Light::getLocalLightArea(float contributuin, Ray r, glm::vec3 intersec
 	float areaLightAngle = glm::dot( glm::vec3(0.0f,0.0f,1.0f), meanPos2inter);
 	areaLightAngle = areaLightAngle < 0 ? 0 : areaLightAngle;
 	float d_2 = glm::dot(intersection - meanPos, intersection - meanPos);
-	float anglecont = (intersectionAngle * areaLightAngle) / d_2;	
+	float anglecont = ((intersectionAngle * areaLightAngle) / d_2)*1.f/ float(AreaLightPoints.size());
 	float dotProduct = glm::dot(pl, N);
 	if (!sphereHit && idT != -1) {
-
-		result += glm::dot(pl, N)*lightIntenisity*T.getTriangles().at(idT).color*contributuin*anglecont;
+		result += glm::dot(pl, N)*lightIntenisity*T.getTriangles().at(idT).color*contributuin+ areaLightIntensity*anglecont;
 	}
 	else if (sphereHit && idS != -1) {
-		result += glm::dot(pl, N)*lightIntenisity*T.getSpheres().at(idS).color*contributuin*anglecont;
+		result += glm::dot(pl, N)*lightIntenisity*T.getSpheres().at(idS).color*contributuin*areaLightIntensity*anglecont;
 	}
 	return result;
 }

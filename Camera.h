@@ -18,8 +18,8 @@ using std::vector;
 const int imageSizeY = 400;
 const int imageSizeZ = 200;
 
-#define samplePerRay 300
-#define bounceDepth 10
+#define samplePerRay 30
+#define bounceDepth 5
 
 class Camera
 {		
