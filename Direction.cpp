@@ -15,22 +15,21 @@ glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos, int camera) {
 glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::material mat) {
 	glm::vec3 directionIn;
 	glm::vec3 v1,v2,axis;
-	float randomValInc = getRandominclinationFloat();
-	float randomValAzi = getRandominclinationFloat();
-	directionIn = glm::normalize(r.getDirection());
 	float teta, phi;
 	float sqrtVal;
 	if (mat.isDiffuse) 
 	{
-		teta = randomValInc*M_PI * 2;
+		float randomValInc = getRandominclinationFloat();
+		float randomValAzi = getRandominclinationFloat();
+		teta = randomValInc*M_PI * 2.f;
 		phi = acos(2 * randomValAzi - 1);
-		sqrtVal = sqrt(1 - sin(phi)*sin(phi));
-		v2 = glm::vec3(sqrtVal*cos(teta), sqrtVal*sin(teta), sin(phi));
-		v1 = glm::dot(v2, normal) < 0 ? glm::abs(v2) : v2;
+		v2 = glm::vec3(cos(teta)*sin(phi), sin(phi)*sin(teta), cos(phi));
+		v1 = glm::dot(v2, normal) <= 0 ? -v2 : v2;
 		return v1;
 	}
 	else 
 	{
+		directionIn = glm::normalize(r.getDirection());
 		return (directionIn - 2 * glm::dot(directionIn, normal)*normal);
 	}
 

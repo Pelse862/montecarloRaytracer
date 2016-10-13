@@ -432,10 +432,10 @@ void Triangle::setTriangles(std::vector<glm::vec3>  & room, std::vector<Triangle
 void Triangle::setSpheres(std::vector<Triangle::sphere> & S) {
 	//add 1 sphere to the scene
 	sphere s1,s2;
-	s1.center = glm::vec3(6.0f, -2.0f, 2.0f);
+	s1.center = glm::vec3(6.0f, 3.0f, -3.0f);
 	s1.radius = 1.0f;
 	s1.color = glm::vec3(100.0f, 100.0f, 100.0f);
-	s1.mat.isSpecular = true;
+	s1.mat.isDiffuse = true;
 	S.push_back(s1);
 
 	s2.center = glm::vec3(11.0f, 0.0f, -0.0f);
