@@ -17,6 +17,5 @@ class Direction
 		glm::vec3 direction = glm::vec3(0.f,0.f,0.f);
 };
 
-inline float getRandomAzimuthValue();
-inline float getRandominclinationValue();
+inline float getRandominclinationFloat();
 

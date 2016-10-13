@@ -15,23 +15,18 @@ glm::vec3 Direction::calculateRayDirection(glm::vec3 endPos, int camera) {
 glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::material mat) {
 	glm::vec3 directionIn;
 	glm::vec3 v1,v2,axis;
-	float randomValInc = getRandominclinationValue();
-	float randomValAzi = getRandomAzimuthValue();
+	float randomValInc = getRandominclinationFloat();
+	float randomValAzi = getRandominclinationFloat();
 	directionIn = glm::normalize(r.getDirection());
-
+	float teta, phi;
+	float sqrtVal;
 	if (mat.isDiffuse) 
 	{
-		v1 = -directionIn - glm::dot(-directionIn, normal)*normal;
-		axis = v2 = v1 = -v1;
-
-		//inclination calculation
-		v1 = v1 * cos(randomValInc) + glm::cross(axis, v1)*sin(randomValInc) + 
-			 axis*(axis*v1)*(1 - cos(randomValInc));
-		
-		//azimuth calculation
-		v1 += v1 * cos(randomValAzi) + glm::cross(normal, v1)*sin(randomValAzi) + 
-			  normal*(normal*v1) - (1 - cos(randomValAzi));
-
+		teta = randomValInc*M_PI * 2;
+		phi = acos(2 * randomValAzi - 1);
+		sqrtVal = sqrt(1 - sin(phi)*sin(phi));
+		v2 = glm::vec3(sqrtVal*cos(teta), sqrtVal*sin(teta), sin(phi));
+		v1 = glm::dot(v2, normal) < 0 ? glm::abs(v2) : v2;
 		return v1;
 	}
 	else 
@@ -43,22 +38,16 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::materia
 
 }
 //should not be uniform
-inline float getRandominclinationValue()
+inline float getRandominclinationFloat()
 {
 	std::random_device generator;
 	std::mt19937 distribution(generator());
-	std::uniform_real_distribution<float> distance(0.0f, 0.999f);
+	std::uniform_real_distribution<float> distance(0.0f, 1.f);
 	return distance(distribution);
 
 }
 
-inline float getRandomAzimuthValue()
-{
-	std::random_device generator;
-	std::mt19937  distribution(generator());
-	std::uniform_real_distribution<float> distance(-0.999f, 0.999f);
-	return distance(distribution);
-}
+
 
 Direction::~Direction()
 {
