@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <cstdio>
@@ -5,7 +6,6 @@
 #include <stdio.h>
 
 #include "glm.hpp"
-#include "Scene.h"
 #include "Camera.h"
 #include "Triangle.h"
 #include "Light.h"
@@ -16,7 +16,7 @@ int main() {
 	bool running = true;
 	int camera = 1;
 
-	Camera *C = new Camera();
+	Camera C;
 	int in;
 
 	while (running) {
@@ -29,7 +29,7 @@ int main() {
 		}
 
 		//right now this also creates an image
-		C->checkTriangleandSphereHits(camera);
+		C.Render(camera);
 
 		std::cout << "So fucking DONE, Run another image? (1/0) : ";
 		std::cin >> in;
@@ -42,8 +42,7 @@ int main() {
 		
 	}
 
-	//probably a memory leak: TODO, fix
-	delete C;
+
 
 
 	return 0;

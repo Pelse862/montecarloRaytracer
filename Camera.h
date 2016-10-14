@@ -18,7 +18,7 @@ using std::vector;
 const int imageSizeY = 480;
 const int imageSizeZ = 300;
 
-#define samplePerRay 1000
+#define samplePerRay 10000
 #define bounceDepth 12
 
 class Camera
@@ -31,7 +31,7 @@ class Camera
 		static glm::vec3 getCameraPosition1() { return glm::vec3(-1.0f, 0.f, 0.0f); }
 		static glm::vec3 getCameraPosition2() { return glm::vec3(-2.0f, 0.0f, 0.0f); }
 		//main rendering loop
-		int checkTriangleandSphereHits(int camera);
+		int Render(int camera);
 		//calculate pixelvalues 
 		glm::vec3 returnPixel(Ray r, Triangle T,  int nrBounces, Light L);
 		//creates an image and saves it into ppm format.

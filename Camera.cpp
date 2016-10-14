@@ -33,7 +33,7 @@ void Camera::createImage() {
 }
 
 //check if the ray from the image plane hits a triangle.
-int Camera::checkTriangleandSphereHits(int camera) {
+int Camera::Render(int camera) {
 
 	//classobjects needed
 	Direction D;
