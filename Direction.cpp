@@ -22,9 +22,8 @@ glm::vec3 Direction::calculateBounce( Ray r, glm::vec3 normal, Triangle::materia
 		float randomValInc = getRandominclinationFloat();
 		float randomValAzi = getRandominclinationFloat();
 		teta = randomValInc*M_PI * 2.f;
-		phi = acos(2 * randomValAzi - 1);
-		v2 = glm::vec3(cos(teta)*sin(phi), sin(phi)*sin(teta), cos(phi));
-		v1 = glm::dot(v2, normal) <= 0 ? -v2 : v2;
+		phi = acos(randomValAzi);
+		v1 = glm::vec3(cos(teta)*sin(phi), sin(phi)*sin(teta), cos(phi));
 		return v1;
 	}
 	else 
